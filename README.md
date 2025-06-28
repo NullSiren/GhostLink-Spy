@@ -1,8 +1,7 @@
 <p align="center">
-  <img src="https://files.catbox.moe/qdn2xo.gif" width="250"/>
+  <img src="https://files.catbox.moe/qayzbv.png" width="250"/>
 </p>
 
-<h1 align="center">Spyware</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Send%20To-Telegram-2CA5E0?style=for-the-badge&logo=telegram"/>
