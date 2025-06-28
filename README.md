@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/Send%20To-Telegram-2CA5E0?style=for-the-badge&logo=telegram"/>
   <img src="https://img.shields.io/badge/Platform-GitHub%20%2B%20Vercel-blueviolet?style=for-the-badge&logo=vercel"/>
   <img src="https://img.shields.io/badge/Status-BETA-orange?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Version-1-red?style=for-the-badge&logo=github"/>
 </p>
 
 ---
