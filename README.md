@@ -27,8 +27,7 @@
 
 ## 𝗖𝗮𝗿𝗮 𝗞𝗲𝗿𝗷𝗮
 
-Jangan lupa download code nya dulu
-1. Deploy script ke 𝗩𝗲𝗿𝗰𝗲𝗹
+1. Deploy script ke 𝗩𝗲𝗿𝗰𝗲𝗹, pastikan kamu sudah download code nya
 2. Atur `BOT_TOKEN` dan `CHAT_ID` di config
 3. Kirim link ke target (via chat, email, dll)
 4. Saat dibuka, tools akan:
@@ -36,5 +35,3 @@ Jangan lupa download code nya dulu
    - Ambil data (kamera, lokasi, device info, Microphone)
    - Kirim otomatis ke bot **Telegram kamu**
    - Jika sebelumnya lokasi dan kamera target sudah izin. tidak akan muncul notifikasi izin kamera & lokasi lagi + microphone
-
----
