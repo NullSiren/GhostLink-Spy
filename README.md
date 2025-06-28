@@ -27,6 +27,7 @@
 
 ## 𝗖𝗮𝗿𝗮 𝗞𝗲𝗿𝗷𝗮
 
+Jangan lupa download code nya dulu
 1. Deploy script ke 𝗩𝗲𝗿𝗰𝗲𝗹
 2. Atur `BOT_TOKEN` dan `CHAT_ID` di config
 3. Kirim link ke target (via chat, email, dll)
