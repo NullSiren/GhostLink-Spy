@@ -2,6 +2,7 @@
   <img src="https://files.catbox.moe/kho3bt.png" width="130"/>
 </p>
 
+<h1 align="center"><strong>𝗦𝗽𝘆𝘄𝗮𝗿𝗲 𝗣𝗵𝗶𝘀𝗵𝗶𝗻𝗴</strong></h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Send%20To-Telegram-2CA5E0?style=for-the-badge&logo=telegram"/>
