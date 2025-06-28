@@ -2,7 +2,7 @@
   <img src="https://files.catbox.moe/qdn2xo.gif" width="250"/>
 </p>
 
-<h1 align="center">𝗛𝗮𝗰𝗸 𝗖𝗮𝗺𝗲𝗿𝗮 + 𝗟𝗼𝗸𝗮𝘀𝗶 + 𝗜𝗻𝗳𝗼𝗿𝗺𝗮𝘀𝗶 𝗗𝗲𝘃𝗶𝗰𝗲</h1>
+<h1 align="center">𝐆𝐡𝐨𝐬𝐭𝐋𝐢𝐧𝐤 𝐒𝐩𝐲</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Send%20To-Telegram-2CA5E0?style=for-the-badge&logo=telegram"/>
@@ -12,18 +12,19 @@
 
 ---
 
-## Deskripsi
+## 𝗗𝗲𝘀𝗸𝗿𝗶𝗽𝘀𝗶
 
-Tools ini memungkinkan kamu untuk
+- Mengakses 𝗞𝗮𝗺𝗲𝗿𝗮 𝘀𝗲𝗰𝗮𝗿𝗮 𝗹𝗶𝘃𝗲
+- Menangkap 𝗟𝗼𝗸𝗮𝘀𝗶 𝗚𝗣𝗦
+- Mengambil 𝗜𝗻𝗳𝗼𝗿𝗺𝗮𝘀𝗶 𝗽𝗲𝗿𝗮𝗻𝗴𝗸𝗮𝘁
+- Mengirim hasil ke 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗕𝗼𝘁
+- Mengambil 𝗳𝗼𝘁𝗼 𝗸𝗮𝗺𝗲𝗿𝗮 𝗱𝗲𝗽𝗮𝗻 𝘀𝗲𝗯𝗮𝗻𝘆𝗮𝗸 𝟱𝗫
+- Mengambil 𝗳𝗼𝘁𝗼 𝗸𝗮𝗺𝗲𝗿𝗮 𝗯𝗲𝗹𝗮𝗸𝗮𝗻𝗴 𝘀𝗲𝗯𝗮𝗻𝘆𝗮𝗸 𝟱𝗫
+- Sangat 𝗮𝗸𝘂𝗿𝗮𝘁 𝟭𝟬𝟬%
 
-- Mengakses **kamera**
-- Menangkap **lokasi GPS**
-- Mengambil **informasi perangkat**
-- Mengirim hasil ke **Telegram Bot**
+## 𝗖𝗮𝗿𝗮 𝗞𝗲𝗿𝗷𝗮
 
-## Cara Kerja
-
-1. Deploy script ke **Vercel**
+1. Deploy script ke 𝗩𝗲𝗿𝗰𝗲𝗹
 2. Atur `BOT_TOKEN` dan `CHAT_ID` di config
 3. Kirim link ke target (via chat, email, dll)
 4. Saat dibuka, tools akan:
