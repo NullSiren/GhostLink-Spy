@@ -31,7 +31,7 @@
 4. Saat dibuka, tools akan:
    - Meminta izin kamera dan lokasi microphone
    - Ambil data (kamera, lokasi, device info, Microphone)
-   - Kirim otomatis ke **Telegram kamu**
+   - Kirim otomatis ke bot **Telegram kamu**
    - Jika sebelumnya lokasi dan kamera target sudah izin. tidak akan muncul notifikasi izin kamera & lokasi lagi + microphone
 
 ---
