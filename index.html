@@ -357,7 +357,7 @@ const ambilLokasi = () => {
               }[err.code] || '❌ Gagal mengambil lokasi.';
               resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n${pesan}`);
             },
-          { enableHighAccuracy: false, timeout: 1000, maximumAge: 300000 }
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
       });
     };
