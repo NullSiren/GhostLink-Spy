@@ -539,7 +539,6 @@ const ambilOutputAudio = async () => {
   let sinkSupport = 'Tidak didukung';
   let bluetoothStatus = 'Tidak terdeteksi';
   let headset = 'Tidak terdeteksi';
-  let penyimpanan = 'Tidak diketahui';
 
   // Deteksi Audio Sink
   try {
@@ -566,22 +565,11 @@ const ambilOutputAudio = async () => {
     headset = outputDevices.length > 1 ? "Ya" : "Tidak";
   } catch {}
 
-  // Estimasi Penyimpanan
-  try {
-    if (navigator.storage && navigator.storage.estimate) {
-      const { quota, usage } = await navigator.storage.estimate();
-      const sisa = quota - usage;
-      const toGB = bytes => (bytes / (1024 ** 3)).toFixed(1);
-      penyimpanan = `${toGB(sisa)} GB dari ${toGB(quota)} GB`;
-    }
-  } catch {}
-
   return `
 ౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 & 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
 Audio Output Sink      : ${sinkSupport}
 Bluetooth              : ${bluetoothStatus}
 Headset Terdeteksi     : ${headset}
-Penyimpanan Tersedia   : ${penyimpanan}
 `.trim();
 };
 
