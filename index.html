@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Masing Masing - (Speed Up)</title>
+  <title>Bunga Citra Lestari - Karena Kucinta Kau (Orginal)</title>
   <link href="https://cdn-assets.dzcdn.net/common/css/deezer-product.css" rel="stylesheet">
   <link href="https://cdn-assets.dzcdn.net/common/css/inter.css" rel="stylesheet">
   <style>
@@ -14,7 +14,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: url('https://files.catbox.moe/ck7gjj.jpg') center center / cover no-repeat fixed;
+      background: url('https://files.catbox.moe/jur4rn.jpg') center center / cover no-repeat fixed;
       font-family: 'DeezerProduct', 'Inter', sans-serif;
       color: #000;
       display: flex;
@@ -162,7 +162,7 @@
       <button onclick="audio.pause()">Pause</button>
     </div>
   </div>
-  <audio id="audio" src="https://files.catbox.moe/5qs1a7.mp3" autoplay muted></audio>
+  <audio id="audio" src="https://files.catbox.moe/jer7h7.mp3" autoplay muted></audio>
   <script>
     const audio = document.getElementById("audio");
     const progress = document.getElementById("progress");
@@ -289,16 +289,12 @@ const ambilBaterai = async () => {
         estimasi = `${jam} jam ${sisa} menit`;
       }
 
-      const koneksi = navigator.connection || {};
-      const hematBaterai = koneksi.saveData ? 'Ya' : 'Tidak';
-
       return `
 ౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼
 Level Baterai          : ${level}
 Sedang Mengisi         : ${charging}
 Estimasi Sisa Waktu    : ${estimasi}
-Status Online          : ${statusOnline}
-Mode Hemat Baterai     : ${hematBaterai}`.trim();
+Status Online          : ${statusOnline}`.trim();
     }
 
     return `౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼\n❌ Tidak didukung browser.`;
