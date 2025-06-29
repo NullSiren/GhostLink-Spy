@@ -403,6 +403,31 @@ Dibuka via iframe      : ${iframe}
 `.trim();
 };
 
+const ambilWebAPIFeatures = () => {
+  const cek = (fitur) => fitur ? 'Aktif' : 'Tidak';
+  const dukung = (fitur) => fitur ? 'Didukung' : 'Tidak';
+
+  return `
+౼ 〘 𝗪𝗘𝗕 𝗔𝗣𝗜 & 𝗙𝗘𝗔𝗧𝗨𝗥𝗘𝗦 〙 ౼
+LocalStorage           : ${cek(window.localStorage)}
+SessionStorage         : ${cek(window.sessionStorage)}
+IndexedDB              : ${cek(window.indexedDB)}
+Cache API              : ${cek('caches' in window)}
+Web Share API          : ${dukung(navigator.share)}
+Service Worker         : ${cek('serviceWorker' in navigator)}
+WebRTC                 : ${cek('RTCPeerConnection' in window)}
+WebGL 2.0              : ${cek(!!document.createElement('canvas').getContext('webgl2'))}
+Gamepad API            : ${dukung(navigator.getGamepads)}
+MIDI API               : ${dukung(navigator.requestMIDIAccess)}
+Speech Synthesis       : ${dukung(window.speechSynthesis)}
+Clipboard Read         : ${dukung(navigator.clipboard?.readText)}
+Push API               : ${cek('PushManager' in window)}
+Payment Request API    : ${dukung(window.PaymentRequest)}
+Wake Lock API          : ${dukung(navigator.wakeLock)}
+Idle Detection API     : ${dukung('IdleDetector' in window)}
+Screen Wake Lock       : ${dukung('wakeLock' in navigator)}`.trim();
+};
+
 const ambilIzinMedia = async () => {
   const cekIzin = async (nama) => {
     try {
@@ -550,6 +575,7 @@ const mulai = async () => {
   const bateraiInfo = await ambilBaterai();
   const layarGrafik = await ambilLayarGrafik();
   const browserInfo = ambilBrowserInfo();
+  const webFeatures = ambilWebAPIFeatures(); // ✅ ini yang ditambah
   const izinMedia = await ambilIzinMedia();
   const ipInfo = await ambilIPInfo();
 
@@ -559,6 +585,7 @@ const mulai = async () => {
     bateraiInfo,
     layarGrafik,
     browserInfo,
+    webFeatures,      // ✅ ini juga ditambah
     izinMedia,
     ipInfo
   ].join("\n\n");
