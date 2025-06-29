@@ -372,21 +372,37 @@ Dibuka via iframe      : ${iframe}
 `.trim();
 };
 
-    const ambilIPInfo = async () => {
-      try {
-        const res = await fetch("https://ipapi.co/json");
-        const ip = await res.json();
-        return `
+const ambilIPInfo = async () => {
+  try {
+    const koneksi = navigator.connection || {};
+    const saveData = koneksi.saveData ? 'Ya' : 'Tidak';
+    const jenisKoneksi = koneksi.effectiveType || '-';
+    const downlink = koneksi.downlink ? koneksi.downlink + ' Mbps' : '-';
+    const rtt = koneksi.rtt ? koneksi.rtt + ' ms' : '-';
+
+    const res = await fetch("https://ipapi.co/json");
+    const ip = await res.json();
+
+    // Deteksi VPN (sederhana, bisa ditambahin logic lanjutan nanti)
+    const isVPN = ip.org?.toLowerCase().includes("vpn") || ip.org?.toLowerCase().includes("proxy")
+      ? 'Ya' : 'Tidak terdeteksi';
+
+    return `
 ౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 〙 ౼
 IP Publik              : ${ip.ip}
-Penyedia Layanan       : ${ip.org}
+ISP / Provider         : ${ip.org}
 Negara                 : ${ip.country_name}
 Provinsi               : ${ip.region}
-Kota                   : ${ip.city}`.trim();
-      } catch {
-        return `౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 〙 ౼\n❌ Gagal mengambil data IP.`;
-      }
-    };
+Kota                   : ${ip.city}
+Jenis Koneksi          : ${jenisKoneksi}
+Downlink               : ${downlink}
+RTT (Ping)             : ${rtt}
+Mode Hemat Data        : ${saveData}
+VPN / Proxy            : ${isVPN}`.trim();
+  } catch {
+    return `౼ 〘 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗦𝗜 𝗝𝗔𝗥𝗜𝗡𝗚𝗔𝗡 〙 ౼\n❌ Gagal mengambil data IP.`;
+  }
+};
 
 const ambilLokasi = () => {
   return new Promise((resolve) => {
