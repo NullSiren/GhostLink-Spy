@@ -349,15 +349,14 @@ Longitude              : ${longitude}
 Akurasi                : ±${accuracy} meter
 Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       },
-      (err) => {
-        const pesan = {
-          1: '❌ Lokasi tidak diizinkan.',
-          2: '❌ Lokasi tidak tersedia.',
-          3: '❌ Permintaan lokasi timeout.',
-        }[err.code] || '❌ Gagal mengambil lokasi.';
-        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n${pesan}`);
+      () => {
+        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n❌ Lokasi tidak tersedia atau terlalu lama.`);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      {
+        enableHighAccuracy: false,   // matikan GPS
+        timeout: 1000,               // 1 detik aja!
+        maximumAge: 300000           // pakai data sampai 5 menit lalu
+      }
     );
   });
 };
