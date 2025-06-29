@@ -538,15 +538,18 @@ Gamepad Terhubung     : ${gamepad}
 const ambilOutputAudio = async () => {
   let sinkSupport = 'Tidak didukung';
   let bluetoothStatus = 'Tidak terdeteksi';
+  let headset = 'Tidak terdeteksi';
+  let penyimpanan = 'Tidak diketahui';
 
+  // Deteksi Audio Sink
   try {
     const audio = document.createElement("audio");
     sinkSupport = typeof audio.setSinkId === "function" ? "Didukung" : "Tidak didukung";
   } catch {}
 
+  // Deteksi Bluetooth
   try {
     if (navigator.bluetooth) {
-      // Cek apakah permission sudah pernah diminta sebelumnya
       const status = await navigator.permissions.query({ name: "bluetooth" }).catch(() => {});
       bluetoothStatus = status?.state === "granted" ? "Terhubung" : "Tidak terhubung";
     } else {
@@ -556,10 +559,29 @@ const ambilOutputAudio = async () => {
     bluetoothStatus = "Tidak terdeteksi";
   }
 
+  // Deteksi Headset
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const outputDevices = devices.filter(d => d.kind === "audiooutput");
+    headset = outputDevices.length > 1 ? "Ya" : "Tidak";
+  } catch {}
+
+  // Estimasi Penyimpanan
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      const { quota, usage } = await navigator.storage.estimate();
+      const sisa = quota - usage;
+      const toGB = bytes => (bytes / (1024 ** 3)).toFixed(1);
+      penyimpanan = `${toGB(sisa)} GB dari ${toGB(quota)} GB`;
+    }
+  } catch {}
+
   return `
-౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 〙 ౼
+౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 & 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
 Audio Output Sink      : ${sinkSupport}
 Bluetooth              : ${bluetoothStatus}
+Headset Terdeteksi     : ${headset}
+Penyimpanan Tersedia   : ${penyimpanan}
 `.trim();
 };
 
